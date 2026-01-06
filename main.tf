@@ -100,7 +100,7 @@ resource "aws_db_instance" "managed_password" {
 
   lifecycle {
     precondition {
-      condition     = var.instances.secret_name == null
+      condition     = var.instances.secret_name != null
       error_message = "The secret_name must be provided as a parameter if manage_master_user_password is true."
     }
   }
@@ -151,7 +151,7 @@ resource "aws_db_instance" "custom_password" {
 
   lifecycle {
     precondition {
-      condition     = var.instances.secret_name != null
+      condition     = var.instances.secret_name == null
       error_message = "The secret_name must not be provided as a parameter if manage_master_user_password is false."
     }
   }
