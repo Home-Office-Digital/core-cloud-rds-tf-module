@@ -40,12 +40,12 @@ resource "aws_secretsmanager_secret_version" "rds_password" {
   secret_id = aws_secretsmanager_secret.custom[0].id
   secret_string = jsonencode({
     username = var.username
-    password = random_password.db[0].result
+    password = random_password.rds[0].result
   })
 }
 
 resource "aws_security_group" "this" {
-  for_each    = var.security_group_ids == null
+  for_each    = var.security_group_ids == null ? var.instances : {}
   name        = "${var.project_name}-${var.environment}-${each.key}-rds-sg"
   description = "Security group for ${each.key} RDS instance"
   vpc_id      = var.vpc_id
@@ -73,22 +73,23 @@ resource "aws_security_group" "this" {
 # Main RDS Instance
 resource "aws_db_instance" "this" {
 
-  allocated_storage         = var.allocated_storage
-  availability_zone         = var.multi_az ? null : var.availability_zone
-  backup_retention_period   = var.backup_retention_period
-  backup_window             = var.backup_window
-  ca_cert_identifier        = var.ca_cert_identifier
-  db_name                   = var.database_name
-  db_subnet_group_name      = var.db_subnet_group_name != null ? data.aws_db_subnet_group.existing[0].name : aws_db_subnet_group.this[0].name
-  deletion_protection       = var.deletion_protection
-  engine                    = var.engine
-  engine_version            = var.engine_version
-  final_snapshot_identifier = var.final_snapshot_identifier
-  identifier                = var.name
-  instance_class            = var.instance_class
-  iops                      = var.iops
-  kms_key_id                = var.kms_key_arn != null ? var.kms_key_arn : null
-  maintenance_window        = var.maintenance_window
+  allocated_storage               = var.allocated_storage
+  availability_zone               = var.multi_az ? null : var.availability_zone
+  backup_retention_period         = var.backup_retention_period
+  backup_window                   = var.backup_window
+  ca_cert_identifier              = var.ca_cert_identifier
+  db_name                         = var.database_name
+  db_subnet_group_name            = var.db_subnet_group_name != null ? data.aws_db_subnet_group.existing[0].name : aws_db_subnet_group.this[0].name
+  deletion_protection             = var.deletion_protection
+  enabled_cloudwatch_logs_exports = var.enabled_cloudwatch_logs_exports
+  engine                          = var.engine
+  engine_version                  = var.engine_version
+  final_snapshot_identifier       = var.final_snapshot_identifier
+  identifier                      = var.name
+  instance_class                  = var.instance_class
+  iops                            = var.iops
+  kms_key_id                      = var.kms_key_arn != null ? var.kms_key_arn : null
+  maintenance_window              = var.maintenance_window
 
   ## Password Management
   manage_master_user_password = local.aws_managed_password

@@ -216,3 +216,38 @@ variable "allowed_cidr_blocks" {
   type        = list(string)
   default     = []
 }
+
+variable "enabled_cloudwatch_logs_exports" {
+  description = "Set of log types to enable for exporting to CloudWatch logs - by default, no logs will be exported. Valid values vary depending on engine."
+  type        = list(string)
+  default     = []
+}
+
+variable "instances" {
+  description = "A map of RDS instance configurations."
+  type = map(object({
+    allowed_cidr_blocks             = optional(list(string), [])
+    allocated_storage               = number
+    backup_retention_period         = number
+    backup_window                   = string
+    database_name                   = string
+    database_user                   = string
+    deletion_protection             = bool
+    engine                          = string
+    engine_version                  = string
+    environment                     = string
+    final_snapshot_identifier       = optional(string, null)
+    instance_class                  = string
+    maintenance_window              = string
+    manage_master_user_password     = optional(bool, null)
+    multi_az                        = optional(bool, false)
+    name                            = string
+    project_name                    = string
+    secret_name                     = optional(string, null)
+    skip_final_snapshot             = bool
+    snapshot_identifier             = optional(string)
+    storage_type                    = string
+    storage_encrypted               = bool
+    enabled_cloudwatch_logs_exports = optional(list(string), [])
+  }))
+}
