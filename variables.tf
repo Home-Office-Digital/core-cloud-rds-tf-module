@@ -2,6 +2,7 @@ variable "instances" {
   description = "A map of RDS instance configurations."
   type = map(object({
     allowed_cidr_blocks             = optional(list(string), [])
+    auto_minor_version_upgrade      = bool
     availability_zone               = optional(string, null)
     allocated_storage               = number
     backup_retention_period         = number
