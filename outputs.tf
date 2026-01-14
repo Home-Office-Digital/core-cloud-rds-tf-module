@@ -17,6 +17,6 @@ output "generated_password" {
 }
 
 output "security_group_ids" {
-  value     = aws_security_group.db.id
+  value     = { for k, v in aws_security_group.this : k => v.id }
   sensitive = true
 }

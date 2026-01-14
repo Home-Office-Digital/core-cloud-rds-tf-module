@@ -44,7 +44,8 @@ resource "aws_secretsmanager_secret_version" "rds_password" {
   })
 }
 
-resource "aws_security_group" "db" {
+resource "aws_security_group" "this" {
+  for_each    = var.security_group_ids == null ? var.instances : {}
   name        = "${var.project_name}-${var.environment}-${each.key}-rds-sg"
   description = "Security group for ${each.key} RDS instance"
   vpc_id      = var.vpc_id
@@ -71,6 +72,7 @@ resource "aws_security_group" "db" {
 
 # Main RDS Instance
 resource "aws_db_instance" "this" {
+  for_each = { for k, v in var.instances : k => v if v.manage_master_user_password }
 
   allocated_storage               = var.allocated_storage
   availability_zone               = var.multi_az ? null : var.availability_zone
@@ -111,8 +113,15 @@ resource "aws_db_instance" "this" {
   storage_encrypted            = true
   skip_final_snapshot          = var.skip_final_snapshot
   username                     = var.username
-  vpc_security_group_ids       = [aws_security_group.db.id]
-  tags                         = var.tags
+  vpc_security_group_ids = concat(
+    [
+      var.security_group_ids != null ?
+      data.aws_security_group.existing[each.key].id :
+      aws_security_group.this[each.key].id
+    ],
+    var.vpc_security_group_ids
+  )
+  tags = var.tags
 
   timeouts {
     create = "90m"
