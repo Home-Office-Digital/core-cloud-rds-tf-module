@@ -37,7 +37,7 @@ resource "aws_secretsmanager_secret" "custom" {
 
 resource "aws_secretsmanager_secret_version" "rds_password" {
   for_each      = random_password.rds
-  secret_id     = aws_secretsmanager_secret.rds_password[each.key].id
+  secret_id     = aws_secretsmanager_secret.custom[each.key].id
   secret_string = each.value.result
 }
 
