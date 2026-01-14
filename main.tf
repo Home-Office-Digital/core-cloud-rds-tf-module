@@ -20,25 +20,22 @@ data "aws_security_group" "existing" {
 }
 
 resource "random_password" "rds" {
-  count            = local.aws_managed_password ? 0 : 1
+  for_each         = var.instances
   length           = 16
   special          = true
   override_special = "!#$%^&*()-_=+[]{}|:;,.<>?"
 }
 
-resource "aws_secretsmanager_secret" "custom" {
-  count       = local.aws_managed_password || local.aws_managed_password ? 1 : 0
-  name        = local.secret_name
-  description = "RDS master password for ${var.name}"
-  kms_key_id  = var.kms_key_id
-
-  tags = var.tags
+resource "aws_secretsmanager_secret" "rds_password" {
+  for_each    = var.instances
+  name        = "${each.key}-rds-password"
+  description = "RDS master password for ${each.key}"
 }
 
 resource "aws_secretsmanager_secret_version" "rds_password" {
-  for_each      = random_password.rds
-  secret_id     = aws_secretsmanager_secret.custom[each.key].id
-  secret_string = each.value.result
+  for_each      = var.instances
+  secret_id     = aws_secretsmanager_secret.rds_password[each.key].id
+  secret_string = random_password.rds[each.key].result
 }
 
 resource "aws_security_group" "this" {
@@ -69,38 +66,30 @@ resource "aws_security_group" "this" {
 
 # Main RDS Instance
 resource "aws_db_instance" "this" {
-  for_each = { for k, v in var.instances : k => v if v.manage_master_user_password }
+  for_each = var.instances
 
-  allocated_storage               = var.allocated_storage
-  availability_zone               = var.multi_az ? null : var.availability_zone
-  backup_retention_period         = var.backup_retention_period
-  backup_window                   = var.backup_window
-  ca_cert_identifier              = var.ca_cert_identifier
-  db_name                         = var.database_name
-  db_subnet_group_name            = var.db_subnet_group_name != null ? data.aws_db_subnet_group.existing[0].name : aws_db_subnet_group.this[0].name
-  deletion_protection             = var.deletion_protection
-  enabled_cloudwatch_logs_exports = var.enabled_cloudwatch_logs_exports
-  engine                          = var.engine
-  engine_version                  = var.engine_version
-  final_snapshot_identifier       = var.final_snapshot_identifier
-  identifier                      = var.name
-  instance_class                  = var.instance_class
-  iops                            = var.iops
-  kms_key_id                      = var.kms_key_arn != null ? var.kms_key_arn : null
-  maintenance_window              = var.maintenance_window
-
-  manage_master_user_password = local.aws_managed_password
-
-  password = local.aws_managed_password ? null : random_password.rds[0].result
-
-  multi_az                     = var.multi_az
-  performance_insights_enabled = var.performance_insights_enabled
-  publicly_accessible          = false
-  snapshot_identifier          = var.snapshot_identifier
-  storage_type                 = var.storage_type
-  storage_encrypted            = true
-  skip_final_snapshot          = var.skip_final_snapshot
-  username                     = var.username
+  allocated_storage           = lookup(each.value, "snapshot_identifier", null) == null ? each.value.allocated_storage : null
+  auto_minor_version_upgrade  = each.value.auto_minor_version_upgrade
+  backup_retention_period     = each.value.backup_retention_period
+  backup_window               = each.value.backup_window
+  ca_cert_identifier          = each.value.ca_cert_identifier
+  db_name                     = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_name : null
+  db_subnet_group_name        = var.db_subnet_group_name != null ? data.aws_db_subnet_group.existing[0].name : aws_db_subnet_group.this[0].name
+  deletion_protection         = each.value.deletion_protection
+  engine                      = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine : null
+  engine_version              = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine_version : null
+  final_snapshot_identifier   = lookup(each.value, "final_snapshot_identifier", null)
+  identifier                  = each.value.name
+  instance_class              = each.value.instance_class
+  kms_key_id                  = var.kms_key_arn != null ? var.kms_key_arn : null
+  maintenance_window          = each.value.maintenance_window
+  multi_az                    = each.value.multi_az
+  password                    = aws_secretsmanager_secret_version.rds_password[each.key].secret_string
+  snapshot_identifier         = lookup(each.value, "snapshot_identifier", null)
+  storage_type                = each.value.storage_type
+  storage_encrypted           = true
+  skip_final_snapshot         = each.value.skip_final_snapshot
+  username                    = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_user : null
   vpc_security_group_ids = concat(
     [
       var.security_group_ids != null ?
@@ -109,7 +98,10 @@ resource "aws_db_instance" "this" {
     ],
     var.vpc_security_group_ids
   )
-  tags = var.tags
+
+  tags = merge(var.tags, {
+    Name = each.value.name
+  })
 
   timeouts {
     create = "90m"

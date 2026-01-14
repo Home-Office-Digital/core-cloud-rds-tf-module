@@ -12,10 +12,4 @@ locals {
     sqlserver-se   = 1433
     sqlserver-ee   = 1433
   }
-
-  aws_managed_password = var.manage_master_user_password
-  secret_name = coalesce(
-    var.secret_name,
-    "${var.name}-rds-password"
-  )
 }

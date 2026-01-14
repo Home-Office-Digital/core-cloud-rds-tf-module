@@ -244,16 +244,14 @@ variable "instances" {
     iops                            = optional(number, null)
     kms_key_id                      = optional(string, null)
     maintenance_window              = string
-    manage_master_user_password     = bool
     multi_az                        = optional(bool, false)
     name                            = string
     performance_insights_enabled    = optional(bool, false)
     project_name                    = string
-    secret_name                     = optional(string, null)
     skip_final_snapshot             = bool
     snapshot_identifier             = optional(string)
     storage_type                    = string
-    storage_encrypted               = bool
+    storage_encrypted               = true
     username                        = string
   }))
 }
