@@ -36,12 +36,9 @@ resource "aws_secretsmanager_secret" "custom" {
 }
 
 resource "aws_secretsmanager_secret_version" "rds_password" {
-  count     = local.aws_managed_password ? 0 : 1
-  secret_id = aws_secretsmanager_secret.custom[0].id
-  secret_string = jsonencode({
-    username = var.username
-    password = random_password.rds[0].result
-  })
+  for_each      = random_password.rds
+  secret_id     = aws_secretsmanager_secret.rds_password[each.key].id
+  secret_string = each.value.result
 }
 
 resource "aws_security_group" "this" {

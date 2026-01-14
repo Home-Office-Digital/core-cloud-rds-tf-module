@@ -242,7 +242,7 @@ variable "instances" {
     final_snapshot_identifier       = optional(string, null)
     instance_class                  = string
     iops                            = optional(number, null)
-    kms_key_id                      = string
+    kms_key_id                      = optional(string, null)
     maintenance_window              = string
     manage_master_user_password     = bool
     multi_az                        = optional(bool, false)
