@@ -92,18 +92,9 @@ resource "aws_db_instance" "this" {
   kms_key_id                      = var.kms_key_arn != null ? var.kms_key_arn : null
   maintenance_window              = var.maintenance_window
 
-  ## Password Management
   manage_master_user_password = local.aws_managed_password
 
   password = local.aws_managed_password ? null : random_password.rds[0].result
-
-  dynamic "master_user_secret" {
-    for_each = local.aws_managed_password ? [1] : []
-    content {
-      secret_arn = aws_secretsmanager_secret.custom[0].arn
-      kms_key_id = var.kms_key_id
-    }
-  }
 
   multi_az                     = var.multi_az
   performance_insights_enabled = var.performance_insights_enabled
