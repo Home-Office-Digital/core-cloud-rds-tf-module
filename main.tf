@@ -44,7 +44,7 @@ resource "aws_secretsmanager_secret_version" "rds_password" {
   })
 }
 
-resource "aws_security_group" "this" {
+resource "aws_security_group" "db" {
   for_each    = var.security_group_ids == null ? var.instances : {}
   name        = "${var.project_name}-${var.environment}-${each.key}-rds-sg"
   description = "Security group for ${each.key} RDS instance"
@@ -115,15 +115,12 @@ resource "aws_db_instance" "this" {
   vpc_security_group_ids = concat(
     [
       var.security_group_ids != null ?
-      data.aws_security_group.existing[each.key].id :
-      aws_security_group.this[each.key].id
+      data.aws_security_group.db.id :
+      aws_security_group.db.id
     ],
     var.vpc_security_group_ids
   )
-
-  tags = merge(var.tags, {
-    Name = each.value.name
-  })
+  tags = var.tags
 
   timeouts {
     create = "90m"
