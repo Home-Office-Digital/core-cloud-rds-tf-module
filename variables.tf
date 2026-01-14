@@ -32,7 +32,6 @@ variable "instances" {
   }))
 }
 
-
 variable "ca_cert_identifier" {
   type        = string
   default     = "rds-ca-rsa2048-g1"
