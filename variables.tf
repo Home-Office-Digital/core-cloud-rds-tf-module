@@ -1,37 +1,36 @@
-variable "name" {
-  type        = string
-  description = "User defined name of RDS instance"
+variable "instances" {
+  description = "A map of RDS instance configurations."
+  type = map(object({
+    allowed_cidr_blocks             = optional(list(string), [])
+    availability_zone               = optional(string, null)
+    allocated_storage               = number
+    backup_retention_period         = number
+    backup_window                   = string
+    ca_cert_identifier              = string
+    database_name                   = string
+    database_user                   = string
+    deletion_protection             = bool
+    enabled_cloudwatch_logs_exports = optional(list(string), [])
+    engine                          = string
+    engine_version                  = string
+    environment                     = string
+    final_snapshot_identifier       = optional(string, null)
+    instance_class                  = string
+    iops                            = optional(number, null)
+    kms_key_id                      = optional(string, null)
+    maintenance_window              = string
+    multi_az                        = optional(bool, false)
+    name                            = string
+    performance_insights_enabled    = optional(bool, false)
+    project_name                    = string
+    skip_final_snapshot             = bool
+    snapshot_identifier             = optional(string)
+    storage_type                    = string
+    storage_encrypted               = string
+    username                        = string
+  }))
 }
 
-variable "engine" {
-  type        = string
-  description = "Database engine eg postgres, MySQL, MariaDB, SQL Server and Oracle"
-}
-
-variable "engine_version" {
-  type        = string
-  description = "Database engine version, depends on engine type"
-}
-
-variable "instance_class" {
-  type        = string
-  description = "Class of RDS instance"
-}
-
-variable "allocated_storage" {
-  type        = number
-  description = "The allocated storage in GBs for the RDS"
-}
-
-variable "database_name" {
-  type        = string
-  description = "The name of the database to create"
-}
-
-variable "username" {
-  type        = string
-  description = "Master DB Username"
-}
 
 variable "ca_cert_identifier" {
   type        = string
@@ -77,10 +76,6 @@ variable "database_user" {
   type        = string
   default     = "root"
   description = "The username for the RDS to be created"
-}
-
-variable "final_snapshot_identifier" {
-  type = string
 }
 
 variable "snapshot_identifier" {
@@ -221,37 +216,4 @@ variable "enabled_cloudwatch_logs_exports" {
   description = "Set of log types to enable for exporting to CloudWatch logs - by default, no logs will be exported. Valid values vary depending on engine."
   type        = list(string)
   default     = []
-}
-
-variable "instances" {
-  description = "A map of RDS instance configurations."
-  type = map(object({
-    allowed_cidr_blocks             = optional(list(string), [])
-    availability_zone               = string
-    allocated_storage               = number
-    backup_retention_period         = number
-    backup_window                   = string
-    ca_cert_identifier              = string
-    database_name                   = string
-    database_user                   = string
-    deletion_protection             = bool
-    enabled_cloudwatch_logs_exports = optional(list(string), [])
-    engine                          = string
-    engine_version                  = string
-    environment                     = string
-    final_snapshot_identifier       = optional(string, null)
-    instance_class                  = string
-    iops                            = optional(number, null)
-    kms_key_id                      = optional(string, null)
-    maintenance_window              = string
-    multi_az                        = optional(bool, false)
-    name                            = string
-    performance_insights_enabled    = optional(bool, false)
-    project_name                    = string
-    skip_final_snapshot             = bool
-    snapshot_identifier             = optional(string)
-    storage_type                    = string
-    storage_encrypted               = string
-    username                        = string
-  }))
 }
