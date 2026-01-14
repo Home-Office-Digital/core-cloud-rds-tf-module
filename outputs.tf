@@ -1,32 +1,22 @@
-output "rds_instance_ids" {
-  description = "A map of RDS instance IDs"
-  value = merge(
-    { for k, v in aws_db_instance.custom_password : k => v.id },
-    { for k, v in aws_db_instance.managed_password : k => v.id }
-  )
+output "endpoint" {
+  value = aws_db_instance.this.endpoint
 }
 
-output "endpoints" {
-  description = "A map of connection endpoints for all RDS instances"
-  value = merge(
-    { for k, instance in aws_db_instance.custom_password : k => instance.endpoint },
-    { for k, instance in aws_db_instance.managed_password : k => instance.endpoint }
-  )
+output "rds_arn" {
+  value = aws_db_instance.this.arn
 }
 
-output "instance_ids" {
-  description = "A map of RDS instance IDs"
-  value = merge(
-    { for k, instance in aws_db_instance.custom_password : k => instance.id },
-    { for k, instance in aws_db_instance.managed_password : k => instance.id }
-  )
+output "secret_arn" {
+  value = aws_secretsmanager_secret.custom[0].arn
 }
 
-output "rds_password_secrets" {
-  description = "A map of Secrets Manager ARNs for RDS passwords (only if AWS is NOT managing passwords)"
-  value       = { for k, v in aws_secretsmanager_secret.rds_password : k => v.arn if contains(keys(aws_secretsmanager_secret.rds_password), k) }
+output "generated_password" {
+  description = "Module generated RDS password"
+  value       = local.aws_managed_password
+  sensitive   = true
 }
 
 output "security_group_ids" {
-  value = { for k, v in aws_security_group.this : k => v.id }
+  value     = { for k, v in aws_security_group.this : k => v.id }
+  sensitive = true
 }

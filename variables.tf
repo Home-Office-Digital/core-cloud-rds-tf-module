@@ -1,30 +1,121 @@
-variable "instances" {
-  description = "A map of RDS instance configurations."
-  type = map(object({
-    allowed_cidr_blocks         = optional(list(string), [])
-    allocated_storage           = number
-    auto_minor_version_upgrade  = bool
-    backup_retention_period     = number
-    backup_window               = string
-    database_name               = string
-    database_user               = string
-    deletion_protection         = bool
-    engine                      = string
-    engine_version              = string
-    environment                 = string
-    final_snapshot_identifier   = optional(string, null)
-    instance_class              = string
-    maintenance_window          = string
-    manage_master_user_password = optional(bool, null)
-    multi_az                    = optional(bool, false)
-    name                        = string
-    project_name                = string
-    secret_name                 = optional(string, null)
-    skip_final_snapshot         = bool
-    snapshot_identifier         = optional(string)
-    storage_type                = string
-    storage_encrypted           = bool
-  }))
+variable "name" {
+  type        = string
+  description = "User defined name of RDS instance"
+}
+
+variable "engine" {
+  type        = string
+  description = "Database engine eg postgres, MySQL, MariaDB, SQL Server and Oracle"
+}
+
+variable "engine_version" {
+  type        = string
+  description = "Database engine version, depends on engine type"
+}
+
+variable "instance_class" {
+  type        = string
+  description = "Class of RDS instance"
+}
+
+variable "allocated_storage" {
+  type        = number
+  description = "The allocated storage in GBs for the RDS"
+}
+
+variable "database_name" {
+  type        = string
+  description = "The name of the database to create"
+}
+
+variable "username" {
+  type        = string
+  description = "Master DB Username"
+}
+
+variable "ca_cert_identifier" {
+  type        = string
+  default     = "rds-ca-rsa2048-g1"
+  description = "Specifies the identifier of the CA certificate for the DB"
+}
+
+variable "availability_zone" {
+  type        = string
+  default     = null
+  description = "Must be specified if multi_az = false"
+}
+
+variable "skip_final_snapshot" {
+  type        = bool
+  default     = true
+  description = "Determines whether a final DB snapshot is created before the DB instance is deleted"
+}
+
+variable "deletion_protection" {
+  type        = bool
+  default     = false
+  description = "Enables deletion protection for the RDS instance. When set to true, the instance cannot be deleted unless this setting is disabled."
+}
+
+variable "kms_key_id" {
+  type    = string
+  default = null
+}
+
+variable "backup_retention_period" {
+  type    = number
+  default = 7
+}
+
+variable "backup_window" {
+  type        = string
+  default     = "22:00-03:00"
+  description = "When AWS can run snapshot, can't overlap with maintenance window"
+}
+
+variable "database_user" {
+  type        = string
+  default     = "root"
+  description = "The username for the RDS to be created"
+}
+
+variable "final_snapshot_identifier" {
+  type = string
+}
+
+variable "snapshot_identifier" {
+  type        = string
+  default     = null
+  description = "Specifies whether or not to create this database from a snapshot."
+}
+
+variable "maintenance_window" {
+  type        = string
+  default     = null
+  description = "The window to perform maintenance in, can't overlap with backup window"
+}
+
+variable "storage_type" {
+  default     = "gp3"
+  type        = string
+  description = "One of 'standard' (magnetic), 'gp2' (general purpose SSD), 'gp3' (new generation of general purpose SSD), or 'io1' (provisioned IOPS SSD)."
+}
+
+variable "iops" {
+  description = "The amount of provisioned IOPS"
+  type        = number
+  default     = null
+}
+
+variable "performance_insights_enabled" {
+  type    = bool
+  default = false
+}
+
+variable "publicly_accessible" {
+  description = "If true, the RDS will be publicly accessible"
+  type        = bool
+  default     = false
 }
 
 variable "db_subnet_group_name" {
@@ -54,9 +145,9 @@ variable "storage_encrypted" {
 }
 
 variable "secret_name" {
-  description = "Name of the secret in AWS Secrets Manager that contains the RDS password"
   type        = string
   default     = null
+  description = "User defined name of the secret in AWS Secrets Manager that contains the RDS password"
 }
 
 variable "manage_master_user_password" {
