@@ -1,13 +1,21 @@
-output "endpoint" {
-  value = aws_db_instance.this.endpoint
+output "rds_instance_ids" {
+  value = { for k, v in aws_db_instance.this : k => v.id }
+  sensitive = true
 }
 
-output "rds_arn" {
-  value = aws_db_instance.this.arn
+output "endpoint" {
+  value = { for k, instance in aws_db_instance.this : k => instance.endpoint }
+  sensitive = true
+}
+
+output "instance_ids" {
+  value = { for k, instance in aws_db_instance.this : k => instance.id }
+  sensitive = true
 }
 
 output "secret_arn" {
   value = aws_secretsmanager_secret.custom[0].arn
+  sensitive = true
 }
 
 output "generated_password" {
