@@ -251,7 +251,7 @@ variable "instances" {
     skip_final_snapshot             = bool
     snapshot_identifier             = optional(string)
     storage_type                    = string
-    storage_encrypted               = true
+    storage_encrypted               = string
     username                        = string
   }))
 }
