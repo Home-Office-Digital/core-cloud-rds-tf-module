@@ -94,7 +94,7 @@ resource "aws_db_instance" "this" {
   ## Password Management
   manage_master_user_password = local.aws_managed_password
 
-  password = local.aws_managed_password ? null : random_password.db[0].result
+  password = local.aws_managed_password ? null : random_password.rds[0].result
 
   dynamic "master_user_secret" {
     for_each = local.aws_managed_password ? [1] : []
