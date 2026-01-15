@@ -41,7 +41,7 @@ jobs:
       - name: Terraform Format
         run: terraform fmt -check
 
-  Run TFLint:
+  run-tflint:
       uses: UKHomeOffice/core-cloud-workflow-tflint-scan@0.2.1
       with:
         tflint_recursive: true
