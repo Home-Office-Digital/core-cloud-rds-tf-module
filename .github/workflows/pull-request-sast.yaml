@@ -41,10 +41,10 @@ jobs:
       - name: Terraform Format
         run: terraform fmt -check
 
-#  run-tflint:
-#      uses: UKHomeOffice/core-cloud-workflow-tflint-scan/.github/workflows/tflint.yaml@0.2.1
-#      with:
-#        tflint_recursive: true
+  run-tflint:
+      uses: UKHomeOffice/core-cloud-workflow-tflint-scan/.github/workflows/tflint.yaml@main
+      with:
+        fail_on_error: true
 
   sonarqube-scanner:
       uses: UKHomeOffice/core-cloud-workflow-sonarqube-scan/.github/workflows/sonarqube-scan.yaml@1.1.6
