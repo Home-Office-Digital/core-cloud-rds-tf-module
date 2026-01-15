@@ -23,6 +23,7 @@ inputs = {
   instances = {
     test = {
       allocated_storage           = 10
+      auto_minor_version_upgrade  = true
       backup_retention_period     = 7
       backup_window               = "22:00-03:00"
       database_name               = "test"
@@ -34,6 +35,7 @@ inputs = {
       instance_class              = "db.t4g.micro"
       manage_master_user_password = false
       maintenance_window          = "Mon:04:00-Mon:05:00"
+      multi_az                    = true
       name                        = "test"
       project_name                = "test-project"
       skip_final_snapshot         = false
@@ -82,7 +84,7 @@ No modules.
 |------|------|
 | [aws_db_instance.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_instance) | resource |
 | [aws_db_subnet_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_subnet_group) | resource |
-| [aws_secretsmanager_secret.custom](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
+| [aws_secretsmanager_secret.rds_password](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret) | resource |
 | [aws_secretsmanager_secret_version.rds_password](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/secretsmanager_secret_version) | resource |
 | [aws_security_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [random_password.rds](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
@@ -93,30 +95,25 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_allocated_storage"></a> [allocated\_storage](#input\_allocated\_storage) | The allocated storage in GBs for the RDS | `number` | n/a | yes |
 | <a name="input_allowed_cidr_blocks"></a> [allowed\_cidr\_blocks](#input\_allowed\_cidr\_blocks) | A list of CIDR blocks to allow ingress traffic from for newly created security groups. | `list(string)` | `[]` | no |
 | <a name="input_auto_minor_version_upgrade"></a> [auto\_minor\_version\_upgrade](#input\_auto\_minor\_version\_upgrade) | Indicates that minor engine upgrades will be applied automatically to the RDSÅ instance during the maintenance window. | `bool` | `true` | no |
 | <a name="input_availability_zone"></a> [availability\_zone](#input\_availability\_zone) | Must be specified if multi\_az = false | `string` | `null` | no |
 | <a name="input_backup_retention_period"></a> [backup\_retention\_period](#input\_backup\_retention\_period) | n/a | `number` | `7` | no |
 | <a name="input_backup_window"></a> [backup\_window](#input\_backup\_window) | When AWS can run snapshot, can't overlap with maintenance window | `string` | `"22:00-03:00"` | no |
 | <a name="input_ca_cert_identifier"></a> [ca\_cert\_identifier](#input\_ca\_cert\_identifier) | Specifies the identifier of the CA certificate for the DB | `string` | `"rds-ca-rsa2048-g1"` | no |
-| <a name="input_database_name"></a> [database\_name](#input\_database\_name) | The name of the database to create | `string` | n/a | yes |
 | <a name="input_database_user"></a> [database\_user](#input\_database\_user) | The username for the RDS to be created | `string` | `"root"` | no |
 | <a name="input_db_subnet_group_name"></a> [db\_subnet\_group\_name](#input\_db\_subnet\_group\_name) | The name of the DB subnet group to use. | `string` | `null` | no |
 | <a name="input_deletion_protection"></a> [deletion\_protection](#input\_deletion\_protection) | Enables deletion protection for the RDS instance. When set to true, the instance cannot be deleted unless this setting is disabled. | `bool` | `false` | no |
-| <a name="input_engine"></a> [engine](#input\_engine) | Database engine eg postgres, MySQL, MariaDB, SQL Server and Oracle | `string` | n/a | yes |
-| <a name="input_engine_version"></a> [engine\_version](#input\_engine\_version) | Database engine version, depends on engine type | `string` | n/a | yes |
+| <a name="input_enabled_cloudwatch_logs_exports"></a> [enabled\_cloudwatch\_logs\_exports](#input\_enabled\_cloudwatch\_logs\_exports) | Set of log types to enable for exporting to CloudWatch logs - by default, no logs will be exported. Valid values vary depending on engine. | `list(string)` | `[]` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment name (e.g., dev, staging, prod) | `string` | n/a | yes |
-| <a name="input_final_snapshot_identifier"></a> [final\_snapshot\_identifier](#input\_final\_snapshot\_identifier) | n/a | `string` | n/a | yes |
-| <a name="input_instance_class"></a> [instance\_class](#input\_instance\_class) | Class of RDS instance | `string` | n/a | yes |
+| <a name="input_instances"></a> [instances](#input\_instances) | A map of RDS instance configurations. | <pre>map(object({<br/>    allowed_cidr_blocks             = optional(list(string), [])<br/>    auto_minor_version_upgrade      = bool<br/>    availability_zone               = optional(string, null)<br/>    allocated_storage               = number<br/>    backup_retention_period         = number<br/>    backup_window                   = string<br/>    ca_cert_identifier              = string<br/>    database_name                   = string<br/>    database_user                   = string<br/>    deletion_protection             = bool<br/>    enabled_cloudwatch_logs_exports = optional(list(string), [])<br/>    engine                          = string<br/>    engine_version                  = string<br/>    environment                     = string<br/>    final_snapshot_identifier       = optional(string, null)<br/>    instance_class                  = string<br/>    iops                            = optional(number, null)<br/>    kms_key_id                      = optional(string, null)<br/>    maintenance_window              = string<br/>    multi_az                        = optional(bool, false)<br/>    name                            = string<br/>    performance_insights_enabled    = optional(bool, false)<br/>    project_name                    = string<br/>    skip_final_snapshot             = bool<br/>    snapshot_identifier             = optional(string)<br/>    storage_type                    = string<br/>    storage_encrypted               = string<br/>    username                        = string<br/>  }))</pre> | n/a | yes |
 | <a name="input_iops"></a> [iops](#input\_iops) | The amount of provisioned IOPS | `number` | `null` | no |
 | <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | Optional KMS key ARN to encrypt the RDS and Secrets Manager secrets | `string` | `null` | no |
 | <a name="input_kms_key_id"></a> [kms\_key\_id](#input\_kms\_key\_id) | n/a | `string` | `null` | no |
 | <a name="input_maintenance_window"></a> [maintenance\_window](#input\_maintenance\_window) | The window to perform maintenance in, can't overlap with backup window | `string` | `null` | no |
 | <a name="input_manage_master_user_password"></a> [manage\_master\_user\_password](#input\_manage\_master\_user\_password) | Determines whether AWS should manage the master user password | `bool` | `false` | no |
 | <a name="input_multi_az"></a> [multi\_az](#input\_multi\_az) | Determines whether RDS instance uses multi-az | `bool` | `false` | no |
-| <a name="input_name"></a> [name](#input\_name) | User defined name of RDS instance | `string` | n/a | yes |
-| <a name="input_performance_insights_enabled"></a> [performance\_insights\_enabled](#input\_performance\_insights\_enabled) | n/a | `bool` | `false` | no |
+| <a name="input_performance_insights_enabled"></a> [performance\_insights\_enabled](#input\_performance\_insights\_enabled) | n/a | `bool` | `true` | no |
 | <a name="input_project_name"></a> [project\_name](#input\_project\_name) | Name of the project | `string` | n/a | yes |
 | <a name="input_publicly_accessible"></a> [publicly\_accessible](#input\_publicly\_accessible) | If true, the RDS will be publicly accessible | `bool` | `false` | no |
 | <a name="input_secret_name"></a> [secret\_name](#input\_secret\_name) | User defined name of the secret in AWS Secrets Manager that contains the RDS password | `string` | `null` | no |
@@ -127,7 +124,6 @@ No modules.
 | <a name="input_storage_type"></a> [storage\_type](#input\_storage\_type) | One of 'standard' (magnetic), 'gp2' (general purpose SSD), 'gp3' (new generation of general purpose SSD), or 'io1' (provisioned IOPS SSD). | `string` | `"gp3"` | no |
 | <a name="input_subnet_ids"></a> [subnet\_ids](#input\_subnet\_ids) | A list of subnet IDs for the DB Subnet Group. | `list(string)` | `[]` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | The following tags must be applied to all resources: cost-centre, account-code, portfolio-id, project-id, service-id, environment-type, owner-business, budget-holder and source-repo | <pre>object({<br/>    cost-centre      = string<br/>    account-code     = string<br/>    portfolio-id     = string<br/>    project-id       = string<br/>    service-id       = string<br/>    environment-type = string<br/>    owner-business   = string<br/>    budget-holder    = string<br/>    source-repo      = string<br/>  })</pre> | n/a | yes |
-| <a name="input_username"></a> [username](#input\_username) | Master DB Username | `string` | n/a | yes |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | The ID of the VPC where RDS instance will be created | `string` | n/a | yes |
 | <a name="input_vpc_security_group_ids"></a> [vpc\_security\_group\_ids](#input\_vpc\_security\_group\_ids) | A list of additional VPC security group IDs. | `list(string)` | `[]` | no |
 
@@ -135,8 +131,8 @@ No modules.
 
 | Name | Description |
 |------|-------------|
-| <a name="output_endpoint"></a> [endpoint](#output\_endpoint) | n/a |
-| <a name="output_generated_password"></a> [generated\_password](#output\_generated\_password) | Module generated RDS password |
-| <a name="output_rds_arn"></a> [rds\_arn](#output\_rds\_arn) | n/a |
-| <a name="output_secret_arn"></a> [secret\_arn](#output\_secret\_arn) | n/a |
+| <a name="output_endpoints"></a> [endpoints](#output\_endpoints) | A map of connection endpoints for all RDS instances |
+| <a name="output_instance_ids"></a> [instance\_ids](#output\_instance\_ids) | A map of RDS instance IDs |
+| <a name="output_rds_instance_ids"></a> [rds\_instance\_ids](#output\_rds\_instance\_ids) | A map of RDS instance IDs |
+| <a name="output_rds_password_secrets"></a> [rds\_password\_secrets](#output\_rds\_password\_secrets) | A map of Secrets Manager ARNs for RDS passwords (only if AWS is NOT managing passwords) |
 | <a name="output_security_group_ids"></a> [security\_group\_ids](#output\_security\_group\_ids) | n/a |

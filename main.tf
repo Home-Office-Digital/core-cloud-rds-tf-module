@@ -87,7 +87,7 @@ resource "aws_db_instance" "this" {
   password                   = aws_secretsmanager_secret_version.rds_password[each.key].secret_string
   snapshot_identifier        = lookup(each.value, "snapshot_identifier", null)
   storage_type               = each.value.storage_type
-  storage_encrypted          = true
+  storage_encrypted          = each.value.storage_encrypted
   skip_final_snapshot        = each.value.skip_final_snapshot
   username                   = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_user : null
   vpc_security_group_ids = concat(
