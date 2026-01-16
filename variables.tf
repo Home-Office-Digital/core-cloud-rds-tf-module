@@ -2,7 +2,7 @@ variable "instances" {
   description = "A map of RDS instance configurations."
   type = map(object({
     allowed_cidr_blocks             = optional(list(string), [])
-    auto_minor_version_upgrade      = optional(bool, false)
+    auto_minor_version_upgrade      = bool
     availability_zone               = optional(string, null)
     allocated_storage               = number
     backup_retention_period         = number
@@ -10,7 +10,7 @@ variable "instances" {
     ca_cert_identifier              = string
     database_name                   = string
     database_user                   = string
-    deletion_protection             = optional(bool, false)
+    deletion_protection             = bool
     enabled_cloudwatch_logs_exports = optional(list(string), [])
     engine                          = string
     engine_version                  = string
@@ -20,14 +20,14 @@ variable "instances" {
     iops                            = optional(number, null)
     kms_key_id                      = optional(string, null)
     maintenance_window              = string
-    multi_az                        = optional(bool, false)
+    multi_az                        = bool
     name                            = string
-    performance_insights_enabled    = optional(bool, false)
+    performance_insights_enabled    = bool
     project_name                    = string
     skip_final_snapshot             = bool
     snapshot_identifier             = optional(string)
     storage_type                    = string
-    storage_encrypted               = optional(bool, false)
+    storage_encrypted               = bool
     username                        = string
   }))
 }
@@ -115,7 +115,7 @@ variable "db_subnet_group_name" {
 variable "multi_az" {
   description = "Determines whether RDS instance uses multi-az"
   type        = bool
-  default     = false
+  default     = true
 
   validation {
     condition     = var.multi_az == true
