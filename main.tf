@@ -69,7 +69,7 @@ resource "aws_db_instance" "this" {
   for_each = var.instances
 
   allocated_storage          = lookup(each.value, "snapshot_identifier", null) == null ? each.value.allocated_storage : null
-  availability_zone          = var.instances.availability_zone
+  availability_zone          = var.availability_zone
   auto_minor_version_upgrade = var.auto_minor_version_upgrade
   backup_retention_period    = var.backup_retention_period
   backup_window              = var.backup_window
