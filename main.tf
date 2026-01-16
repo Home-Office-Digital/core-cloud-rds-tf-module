@@ -30,6 +30,10 @@ resource "aws_secretsmanager_secret" "rds_password" {
   for_each    = var.instances
   name        = "${each.key}-rds-password"
   description = "RDS master password for ${each.key}"
+  
+  tags = merge(var.tags, {
+    Name = "${var.project_name}-${var.environment}-${each.key}-rds-sg"
+  })
 }
 
 resource "aws_secretsmanager_secret_version" "rds_password" {
@@ -50,6 +54,7 @@ resource "aws_security_group" "this" {
     to_port     = lookup(local.engine_ports, each.value.engine, 0)
     protocol    = "tcp"
     cidr_blocks = each.value.allowed_cidr_blocks
+    description = "Security group ingress rule for ${each.key} RDS instance"
   }
 
   egress {
@@ -57,6 +62,7 @@ resource "aws_security_group" "this" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+    description = "Security group egress rule for ${each.key} RDS instance"
   }
 
   tags = merge(var.tags, {
