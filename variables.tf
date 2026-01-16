@@ -54,11 +54,6 @@ variable "deletion_protection" {
   type        = bool
   default     = true
   description = "Enables deletion protection for the RDS instance. When set to true, the instance cannot be deleted unless this setting is disabled."
-
-  validation {
-    condition     = contains(["true"], var.deletion_protection)
-    error_message = "The variable deletion_protection must be set to true."
-  }
 }
 
 variable "backup_retention_period" {
@@ -93,11 +88,6 @@ variable "storage_type" {
 variable "performance_insights_enabled" {
   type    = bool
   default = true
-
-  validation {
-    condition     = contains(["true"], var.performance_insights_enabled)
-    error_message = "The variable performance_insights_enabled must be set to true."
-  }
 }
 
 variable "publicly_accessible" {
@@ -116,33 +106,18 @@ variable "multi_az" {
   description = "Determines whether RDS instance uses multi-az"
   type        = bool
   default     = true
-
-  validation {
-    condition     = contains(["true"], var.multi_az)
-    error_message = "The variable multi_az must be set to true."
-  }
 }
 
 variable "auto_minor_version_upgrade" {
   description = "Indicates that minor engine upgrades will be applied automatically to the RDSÅ instance during the maintenance window."
   type        = bool
   default     = true
-
-  validation {
-    condition     = contains(["true"], var.auto_minor_version_upgrade)
-    error_message = "The variable auto_minor_version_upgrade must be set to true."
-  }
 }
 
 variable "storage_encrypted" {
   description = "Specifies whether the RDS instance storage is encrypted"
   type        = bool
   default     = true
-
-  validation {
-    condition     = contains(["true"], var.storage_encrypted)
-    error_message = "The variable storage_encrypted must be set to true."
-  }
 }
 
 variable "kms_key_arn" {
