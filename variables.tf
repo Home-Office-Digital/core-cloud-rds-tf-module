@@ -2,7 +2,7 @@ variable "instances" {
   description = "A map of RDS instance configurations."
   type = map(object({
     allowed_cidr_blocks             = optional(list(string), [])
-    auto_minor_version_upgrade      = bool
+    auto_minor_version_upgrade      = optional(bool, false)
     availability_zone               = optional(string, null)
     allocated_storage               = number
     backup_retention_period         = number
@@ -10,7 +10,7 @@ variable "instances" {
     ca_cert_identifier              = string
     database_name                   = string
     database_user                   = string
-    deletion_protection             = bool
+    deletion_protection             = optional(bool, false)
     enabled_cloudwatch_logs_exports = optional(list(string), [])
     engine                          = string
     engine_version                  = string
@@ -27,7 +27,7 @@ variable "instances" {
     skip_final_snapshot             = bool
     snapshot_identifier             = optional(string)
     storage_type                    = string
-    storage_encrypted               = string
+    storage_encrypted               = optional(bool, false)
     username                        = string
   }))
 }
