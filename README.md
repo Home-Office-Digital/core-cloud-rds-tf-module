@@ -1,7 +1,7 @@
 ## Core Cloud RDS Module
 
 This RDS Module is written and maintained by the Core Cloud Platform team and includes the following checks and scans:
-Terraform validate, Terraform fmt, Checkov scan, Sonarqube scan, Semantic versioning - MAJOR.MINOR.PATCH.
+Terraform validate, Terraform fmt, TFLint, Checkov scan, Sonarqube scan, Semantic versioning - MAJOR.MINOR.PATCH.
 
 ## Usage
 
@@ -33,7 +33,6 @@ inputs = {
       engine_version              = "xxx"
       environment                 = "test"
       instance_class              = "db.t4g.micro"
-      manage_master_user_password = false
       maintenance_window          = "Mon:04:00-Mon:05:00"
       multi_az                    = true
       name                        = "test"
@@ -59,20 +58,20 @@ inputs = {
 }
 
 ```
-
 ## Requirements
 
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.5.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.88.0 |
+| <a name="requirement_random"></a> [random](#requirement\_random) | ~> 3.6 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.88.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | n/a |
+| <a name="provider_random"></a> [random](#provider\_random) | ~> 3.6 |
 
 ## Modules
 
@@ -95,7 +94,6 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_allowed_cidr_blocks"></a> [allowed\_cidr\_blocks](#input\_allowed\_cidr\_blocks) | A list of CIDR blocks to allow ingress traffic from for newly created security groups. | `list(string)` | `[]` | no |
 | <a name="input_auto_minor_version_upgrade"></a> [auto\_minor\_version\_upgrade](#input\_auto\_minor\_version\_upgrade) | Indicates that minor engine upgrades will be applied automatically to the RDSÅ instance during the maintenance window. | `bool` | `true` | no |
 | <a name="input_availability_zone"></a> [availability\_zone](#input\_availability\_zone) | Must be specified if multi\_az = false | `string` | `null` | no |
 | <a name="input_backup_retention_period"></a> [backup\_retention\_period](#input\_backup\_retention\_period) | n/a | `number` | `7` | no |
@@ -103,20 +101,14 @@ No modules.
 | <a name="input_ca_cert_identifier"></a> [ca\_cert\_identifier](#input\_ca\_cert\_identifier) | Specifies the identifier of the CA certificate for the DB | `string` | `"rds-ca-rsa2048-g1"` | no |
 | <a name="input_database_user"></a> [database\_user](#input\_database\_user) | The username for the RDS to be created | `string` | `"root"` | no |
 | <a name="input_db_subnet_group_name"></a> [db\_subnet\_group\_name](#input\_db\_subnet\_group\_name) | The name of the DB subnet group to use. | `string` | `null` | no |
-| <a name="input_deletion_protection"></a> [deletion\_protection](#input\_deletion\_protection) | Enables deletion protection for the RDS instance. When set to true, the instance cannot be deleted unless this setting is disabled. | `bool` | `false` | no |
-| <a name="input_enabled_cloudwatch_logs_exports"></a> [enabled\_cloudwatch\_logs\_exports](#input\_enabled\_cloudwatch\_logs\_exports) | Set of log types to enable for exporting to CloudWatch logs - by default, no logs will be exported. Valid values vary depending on engine. | `list(string)` | `[]` | no |
+| <a name="input_deletion_protection"></a> [deletion\_protection](#input\_deletion\_protection) | Enables deletion protection for the RDS instance. When set to true, the instance cannot be deleted unless this setting is disabled. | `bool` | `true` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment name (e.g., dev, staging, prod) | `string` | n/a | yes |
 | <a name="input_instances"></a> [instances](#input\_instances) | A map of RDS instance configurations. | <pre>map(object({<br/>    allowed_cidr_blocks             = optional(list(string), [])<br/>    auto_minor_version_upgrade      = bool<br/>    availability_zone               = optional(string, null)<br/>    allocated_storage               = number<br/>    backup_retention_period         = number<br/>    backup_window                   = string<br/>    ca_cert_identifier              = string<br/>    database_name                   = string<br/>    database_user                   = string<br/>    deletion_protection             = bool<br/>    enabled_cloudwatch_logs_exports = optional(list(string), [])<br/>    engine                          = string<br/>    engine_version                  = string<br/>    environment                     = string<br/>    final_snapshot_identifier       = optional(string, null)<br/>    instance_class                  = string<br/>    iops                            = optional(number, null)<br/>    kms_key_id                      = optional(string, null)<br/>    maintenance_window              = string<br/>    multi_az                        = optional(bool, false)<br/>    name                            = string<br/>    performance_insights_enabled    = optional(bool, false)<br/>    project_name                    = string<br/>    skip_final_snapshot             = bool<br/>    snapshot_identifier             = optional(string)<br/>    storage_type                    = string<br/>    storage_encrypted               = string<br/>    username                        = string<br/>  }))</pre> | n/a | yes |
-| <a name="input_iops"></a> [iops](#input\_iops) | The amount of provisioned IOPS | `number` | `null` | no |
 | <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | Optional KMS key ARN to encrypt the RDS and Secrets Manager secrets | `string` | `null` | no |
-| <a name="input_kms_key_id"></a> [kms\_key\_id](#input\_kms\_key\_id) | n/a | `string` | `null` | no |
-| <a name="input_maintenance_window"></a> [maintenance\_window](#input\_maintenance\_window) | The window to perform maintenance in, can't overlap with backup window | `string` | `null` | no |
-| <a name="input_manage_master_user_password"></a> [manage\_master\_user\_password](#input\_manage\_master\_user\_password) | Determines whether AWS should manage the master user password | `bool` | `false` | no |
 | <a name="input_multi_az"></a> [multi\_az](#input\_multi\_az) | Determines whether RDS instance uses multi-az | `bool` | `false` | no |
 | <a name="input_performance_insights_enabled"></a> [performance\_insights\_enabled](#input\_performance\_insights\_enabled) | n/a | `bool` | `true` | no |
 | <a name="input_project_name"></a> [project\_name](#input\_project\_name) | Name of the project | `string` | n/a | yes |
 | <a name="input_publicly_accessible"></a> [publicly\_accessible](#input\_publicly\_accessible) | If true, the RDS will be publicly accessible | `bool` | `false` | no |
-| <a name="input_secret_name"></a> [secret\_name](#input\_secret\_name) | User defined name of the secret in AWS Secrets Manager that contains the RDS password | `string` | `null` | no |
 | <a name="input_security_group_ids"></a> [security\_group\_ids](#input\_security\_group\_ids) | A map of existing security group IDs to use for the instances, keyed by the instance name. If not provided, new ones will be created. | `map(string)` | `null` | no |
 | <a name="input_skip_final_snapshot"></a> [skip\_final\_snapshot](#input\_skip\_final\_snapshot) | Determines whether a final DB snapshot is created before the DB instance is deleted | `bool` | `true` | no |
 | <a name="input_snapshot_identifier"></a> [snapshot\_identifier](#input\_snapshot\_identifier) | Specifies whether or not to create this database from a snapshot. | `string` | `null` | no |
