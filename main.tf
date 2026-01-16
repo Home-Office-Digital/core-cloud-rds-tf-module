@@ -30,7 +30,7 @@ resource "aws_secretsmanager_secret" "rds_password" {
   for_each    = var.instances
   name        = "${each.key}-rds-password"
   description = "RDS master password for ${each.key}"
-  
+
   tags = merge(var.tags, {
     Name = "${var.project_name}-${var.environment}-${each.key}-rds-sg"
   })
