@@ -56,7 +56,7 @@ variable "deletion_protection" {
   description = "Enables deletion protection for the RDS instance. When set to true, the instance cannot be deleted unless this setting is disabled."
 
   validation {
-    condition     = var.deletion_protection == true
+    condition     = contains(["true"], var.deletion_protection)
     error_message = "The variable deletion_protection must be set to true."
   }
 }
@@ -95,7 +95,7 @@ variable "performance_insights_enabled" {
   default = true
 
   validation {
-    condition     = var.performance_insights_enabled == true
+    condition     = contains(["true"], var.performance_insights_enabled)
     error_message = "The variable performance_insights_enabled must be set to true."
   }
 }
@@ -118,7 +118,7 @@ variable "multi_az" {
   default     = true
 
   validation {
-    condition     = var.multi_az == true
+    condition     = contains(["true"], var.multi_az)
     error_message = "The variable multi_az must be set to true."
   }
 }
@@ -129,7 +129,7 @@ variable "auto_minor_version_upgrade" {
   default     = true
 
   validation {
-    condition     = var.auto_minor_version_upgrade == true
+    condition     = contains(["true"], var.auto_minor_version_upgrade)
     error_message = "The variable auto_minor_version_upgrade must be set to true."
   }
 }
@@ -140,7 +140,7 @@ variable "storage_encrypted" {
   default     = true
 
   validation {
-    condition     = var.storage_encrypted == true
+    condition     = contains(["true"], var.storage_encrypted)
     error_message = "The variable storage_encrypted must be set to true."
   }
 }
