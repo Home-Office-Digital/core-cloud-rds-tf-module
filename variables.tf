@@ -38,12 +38,6 @@ variable "ca_cert_identifier" {
   description = "Specifies the identifier of the CA certificate for the DB"
 }
 
-variable "availability_zone" {
-  type        = string
-  default     = null
-  description = "Must be specified if multi_az = false"
-}
-
 variable "skip_final_snapshot" {
   type        = bool
   default     = true
@@ -52,18 +46,13 @@ variable "skip_final_snapshot" {
 
 variable "deletion_protection" {
   type        = bool
-  default     = false
+  default     = true
   description = "Enables deletion protection for the RDS instance. When set to true, the instance cannot be deleted unless this setting is disabled."
 
   validation {
     condition     = var.deletion_protection == true
     error_message = "The variable deletion_protection must be set to true."
   }
-}
-
-variable "kms_key_id" {
-  type    = string
-  default = null
 }
 
 variable "backup_retention_period" {
@@ -93,12 +82,6 @@ variable "storage_type" {
   default     = "gp3"
   type        = string
   description = "One of 'standard' (magnetic), 'gp2' (general purpose SSD), 'gp3' (new generation of general purpose SSD), or 'io1' (provisioned IOPS SSD)."
-}
-
-variable "iops" {
-  description = "The amount of provisioned IOPS"
-  type        = number
-  default     = null
 }
 
 variable "performance_insights_enabled" {
@@ -156,12 +139,6 @@ variable "storage_encrypted" {
   }
 }
 
-variable "secret_name" {
-  type        = string
-  default     = null
-  description = "User defined name of the secret in AWS Secrets Manager that contains the RDS password"
-}
-
 variable "kms_key_arn" {
   description = "Optional KMS key ARN to encrypt the RDS and Secrets Manager secrets"
   type        = string
@@ -213,18 +190,6 @@ variable "vpc_security_group_ids" {
 
 variable "subnet_ids" {
   description = "A list of subnet IDs for the DB Subnet Group."
-  type        = list(string)
-  default     = []
-}
-
-variable "allowed_cidr_blocks" {
-  description = "A list of CIDR blocks to allow ingress traffic from for newly created security groups."
-  type        = list(string)
-  default     = []
-}
-
-variable "enabled_cloudwatch_logs_exports" {
-  description = "Set of log types to enable for exporting to CloudWatch logs - by default, no logs will be exported. Valid values vary depending on engine."
   type        = list(string)
   default     = []
 }
