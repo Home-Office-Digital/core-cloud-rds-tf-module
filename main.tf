@@ -76,7 +76,7 @@ resource "aws_db_instance" "this" {
   ca_cert_identifier         = var.ca_cert_identifier
   db_name                    = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_name : null
   db_subnet_group_name       = var.db_subnet_group_name != null ? data.aws_db_subnet_group.existing[0].name : aws_db_subnet_group.this[0].name
-  deletion_protection        = lookup(each.value, "deletion_protection", true)
+  deletion_protection        = var.deletion_protection
   engine                     = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine : null
   engine_version             = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine_version : null
   final_snapshot_identifier  = lookup(each.value, "final_snapshot_identifier", null)
@@ -84,14 +84,14 @@ resource "aws_db_instance" "this" {
   instance_class             = each.value.instance_class
   kms_key_id                 = var.kms_key_arn != null ? var.kms_key_arn : null
   maintenance_window         = each.value.maintenance_window
-  multi_az                   = each.value.multi_az
+  multi_az                   = var.multi_az
   password                   = aws_secretsmanager_secret_version.rds_password[each.key].secret_string
   performance_insights_enabled = var.performance_insights_enabled
   publicly_accessible = var.publicly_accessible
   snapshot_identifier        = var.snapshot_identifier
   storage_type               = var.storage_type
   storage_encrypted          = var.storage_encrypted
-  skip_final_snapshot        = each.value.skip_final_snapshot
+  skip_final_snapshot        = var.skip_final_snapshot
   username                   = lookup(each.value, "snapshot_identifier", null) == null ? var.database_user : null
   vpc_security_group_ids = concat(
     [

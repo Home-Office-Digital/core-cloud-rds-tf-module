@@ -38,6 +38,12 @@ variable "ca_cert_identifier" {
   description = "Specifies the identifier of the CA certificate for the DB"
 }
 
+variable "availability_zone" {
+  type        = string
+  default     = null
+  description = "Must be specified if multi_az = false"
+}
+
 variable "skip_final_snapshot" {
   type        = bool
   default     = true
