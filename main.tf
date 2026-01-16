@@ -30,6 +30,7 @@ resource "aws_secretsmanager_secret" "rds_password" {
   for_each    = var.instances
   name        = "${each.key}-rds-password"
   description = "RDS master password for ${each.key}"
+  kms_key_id  = var.kms_key_arn != null ? var.kms_key_arn : null
 
   tags = merge(var.tags, {
     Name = "${var.project_name}-${var.environment}-${each.key}-rds-sg"
