@@ -89,12 +89,6 @@ variable "snapshot_identifier" {
   description = "Specifies whether or not to create this database from a snapshot."
 }
 
-variable "maintenance_window" {
-  type        = string
-  default     = null
-  description = "The window to perform maintenance in, can't overlap with backup window"
-}
-
 variable "storage_type" {
   default     = "gp3"
   type        = string
@@ -166,12 +160,6 @@ variable "secret_name" {
   type        = string
   default     = null
   description = "User defined name of the secret in AWS Secrets Manager that contains the RDS password"
-}
-
-variable "manage_master_user_password" {
-  description = "Determines whether AWS should manage the master user password"
-  type        = bool
-  default     = false
 }
 
 variable "kms_key_arn" {
