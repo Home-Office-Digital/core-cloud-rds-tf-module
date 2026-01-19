@@ -45,6 +45,9 @@ jobs:
         id: lint
         if: success() || failure()
         uses: UKHomeOffice/core-cloud-workflow-tflint-scan@main
+      
+      - name: Terraform tests
+        run: terraform test
 
   sonarqube-scanner:
       uses: UKHomeOffice/core-cloud-workflow-sonarqube-scan/.github/workflows/sonarqube-scan.yaml@1.1.6
@@ -55,6 +58,4 @@ jobs:
   checkov-scan:
       uses: UKHomeOffice/core-cloud-workflow-checkov-sast-scan/.github/workflows/checkov-scan-base.yaml@1.9.0
 
-#      - name: Terraform tests
-#        run : terraform test
-#        env:
+
