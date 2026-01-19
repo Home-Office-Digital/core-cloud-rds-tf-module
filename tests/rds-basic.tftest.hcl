@@ -1,10 +1,8 @@
-// Terraform tests for the RDS module using provider mocks.
-
 // Mock providers to avoid real AWS/random calls during tests.
 mock_provider "aws" {}
 mock_provider "random" {}
 
-run "plan_with_new_security_group" {
+run "rds_with_new_security_group" {
   command = plan
 
   variables {
@@ -65,7 +63,7 @@ run "plan_with_new_security_group" {
   }
 }
 
-run "plan_with_existing_security_group_and_subnet_group" {
+run "rds_with_existing_security_group_and_subnet_group" {
   command = plan
 
   variables {
