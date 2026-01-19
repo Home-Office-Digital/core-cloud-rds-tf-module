@@ -62,7 +62,8 @@ resource "aws_security_group" "this" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    # Change this to your internal VPC CIDR or a specific monitoring IP. Egress should be restricted to internal VPC only
+    cidr_blocks = each.value.allowed_cidr_blocks
     description = "Security group egress rule for ${each.key} RDS instance"
   }
 
