@@ -174,3 +174,10 @@ variable "subnet_ids" {
   type        = list(string)
   default     = []
 }
+
+variable "allowed_cidr_blocks" {
+  description = "A list of allowed CIDRs for the DB Subnet Group."
+  type        = list(string)
+  default     = []
+  nullable    = false
+}
