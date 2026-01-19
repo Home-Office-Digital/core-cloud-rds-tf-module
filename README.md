@@ -60,6 +60,7 @@ inputs = {
 }
 
 ```
+
 ## Requirements
 
 | Name | Version |
