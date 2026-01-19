@@ -18,7 +18,7 @@ output "instance_ids" {
 }
 
 output "rds_password_secrets" {
-  description = "A map of Secrets Manager ARNs for RDS passwords (only if AWS is NOT managing passwords)"
+  description = "A map of Secrets Manager ARNs for RDS passwords"
   value       = { for k, v in aws_secretsmanager_secret.rds_password : k => v.arn if contains(keys(aws_secretsmanager_secret.rds_password), k) }
   sensitive   = true
 }
