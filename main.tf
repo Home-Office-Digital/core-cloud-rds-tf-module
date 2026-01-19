@@ -28,7 +28,7 @@ resource "random_password" "rds" {
 
 resource "aws_secretsmanager_secret" "rds_password" {
   for_each    = var.instances
-  name        = "${each.key}-rds-password"
+  name        = "${var.project_name}-${each.key}-rds-password"
   description = "RDS master password for ${each.key}"
   kms_key_id  = var.kms_key_arn != null ? var.kms_key_arn : null
 
