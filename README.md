@@ -22,10 +22,11 @@ inputs = {
   # RDS Instances Configuration
   instances = {
     test = {
-      allocated_storage           = 10
+      allocated_storage           = 20
       auto_minor_version_upgrade  = true
       backup_retention_period     = 7
       backup_window               = "22:00-03:00"
+      ca_cert_identifier           = "rds-ca-rsa2048-g1"
       database_name               = "test"
       database_user               = "test"
       deletion_protection         = true
@@ -36,6 +37,7 @@ inputs = {
       maintenance_window          = "Mon:04:00-Mon:05:00"
       multi_az                    = true
       name                        = "test"
+      performance_insights_enabled = true
       project_name                = "test-project"
       skip_final_snapshot         = false
       storage_type                = "gp3"
@@ -53,7 +55,7 @@ inputs = {
     environment-type = "xxx"
     owner-business   = "xxx"
     budget-holder    = "xxx"
-    hosting-platform = "xxx"
+    source-repo      = "xxx"
   }
 }
 
