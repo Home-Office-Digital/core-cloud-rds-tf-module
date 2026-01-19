@@ -22,6 +22,8 @@ jobs:
   RunTerraformValidation:
     name: Run Terraform SAST
     runs-on: ubuntu-latest
+    env:
+      TF_INPUT: "false"
 
     steps:
       - name: Clone the Repository
@@ -32,14 +34,14 @@ jobs:
         with:
           terraform_version: ~1.7.0
 
-      - name: terraform init
-        run: terraform init
+      - name: terraform init (no backend)
+        run: terraform init -backend=false
 
       - name: terraform validate
         run: terraform validate
 
       - name: Terraform Format
-        run: terraform fmt -check
+        run: terraform fmt -check -recursive
       
       - name: TFLint
         id: lint
@@ -47,7 +49,7 @@ jobs:
         uses: UKHomeOffice/core-cloud-workflow-tflint-scan@main
       
       - name: Terraform tests
-        run: terraform test
+        run: terraform test -no-color
 
   sonarqube-scanner:
       uses: UKHomeOffice/core-cloud-workflow-sonarqube-scan/.github/workflows/sonarqube-scan.yaml@1.1.6
