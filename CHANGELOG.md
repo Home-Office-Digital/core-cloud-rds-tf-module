@@ -60,4 +60,4 @@ eg:
 
 ### [0.0.15] 2026-01-20
 
-  * Updating tags, adding copy tags to snapshot variable, adding secret rotation functionality and security group logic
+  * Updating tags, adding RDS variables, secret rotation functionality and security group logic
