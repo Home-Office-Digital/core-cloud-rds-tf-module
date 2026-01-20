@@ -22,6 +22,9 @@ variable "instances" {
     iops                            = optional(number, null)
     kms_key_id                      = optional(string, null)
     maintenance_window              = string
+    manage_master_user_password     = bool
+    master_user_secret_kms_key_id   = optional(string, null)
+    max_allocated_storage           = optional(number, null)
     multi_az                        = bool
     monitoring_interval             = optional(number, null)
     monitoring_role_arn             = optional(string, null)
@@ -225,6 +228,24 @@ variable "dedicated_log_volume" {
 
 variable "iops" {
   description = "The amount of provisioned IOPS. Setting this implies a storage_type of 'io1' or 'io2'. Can only be set when storage_type is 'io1', 'io2' or 'gp3'. Cannot be specified for gp3 storage if the allocated_storage value is below a per-engine threshold."
+  type        = number
+  default     = null
+}
+
+variable "manage_master_user_password" {
+  description = "Set to true to allow RDS to manage the master user password in Secrets Manager."
+  type        = bool
+  default     = true
+}
+
+variable "master_user_secret_kms_key_id" {
+  description = "The Amazon Web Services KMS key identifier is the key ARN, key ID, alias ARN, or alias name for the KMS key."
+  type        = string
+  default     = true
+}
+
+variable "max_allocated_storage" {
+  description = "Specifies the maximum storage (in GiB) that Amazon RDS can automatically scale to for this DB instance."
   type        = number
   default     = null
 }

@@ -61,3 +61,7 @@ eg:
 ### [0.0.15] 2026-01-20
 
   * Updating tags, adding RDS variables, secret rotation functionality and security group logic
+
+### [0.0.16] 2026-01-20
+
+  * Adding RDS variables and secret rotation functionality

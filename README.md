@@ -39,6 +39,7 @@ inputs = {
       environment                     = "test"
       instance_class                  = "db.t4g.micro"
       maintenance_window              = "Mon:04:00-Mon:05:00"
+      manage_master_user_password     = true
       multi_az                        = true
       name                            = "test"
       performance_insights_enabled    = true
