@@ -49,3 +49,12 @@ eg:
 ### [0.0.12] 2026-01-19
 
   * Update Changelog to relect recent updates
+
+### [0.0.13] 2026-01-19
+
+  * Update Codeowners, RDS Password prefix and Changelog
+
+### [0.0.14] 2026-01-19
+
+  * Update egress logic, restricting to user defined cidr
+

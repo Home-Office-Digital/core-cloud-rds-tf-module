@@ -23,6 +23,7 @@ inputs = {
   instances = {
     test = {
       allocated_storage           = 20
+      allowed_cidr_blocks         = [x.x.x.x/x]
       auto_minor_version_upgrade  = true
       backup_retention_period     = 7
       backup_window               = "22:00-03:00"
@@ -60,6 +61,7 @@ inputs = {
 }
 
 ```
+
 ## Requirements
 
 | Name | Version |

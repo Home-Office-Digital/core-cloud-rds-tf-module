@@ -28,7 +28,7 @@ resource "random_password" "rds" {
 
 resource "aws_secretsmanager_secret" "rds_password" {
   for_each    = var.instances
-  name        = "${each.key}-rds-password"
+  name        = "${var.project_name}-${each.key}-rds-password"
   description = "RDS master password for ${each.key}"
   kms_key_id  = var.kms_key_arn != null ? var.kms_key_arn : null
 
@@ -54,15 +54,16 @@ resource "aws_security_group" "this" {
     from_port   = lookup(local.engine_ports, each.value.engine, 0)
     to_port     = lookup(local.engine_ports, each.value.engine, 0)
     protocol    = "tcp"
-    cidr_blocks = each.value.allowed_cidr_blocks
+    cidr_blocks = var.allowed_cidr_blocks
     description = "Security group ingress rule for ${each.key} RDS instance"
   }
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port = 0
+    to_port   = 0
+    protocol  = "-1"
+    # Change this to your internal VPC CIDR or a specific monitoring IP. Egress should be restricted to internal VPC only
+    cidr_blocks = var.allowed_cidr_blocks
     description = "Security group egress rule for ${each.key} RDS instance"
   }
 
