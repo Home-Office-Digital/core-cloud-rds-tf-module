@@ -22,8 +22,10 @@ variable "instances" {
     kms_key_id                      = optional(string, null)
     maintenance_window              = string
     multi_az                        = bool
+    monitoring_role_arn             = optional(string, null)
     name                            = string
     performance_insights_enabled    = bool
+    performance_insights_kms_key_id = optional(string, null)
     project_name                    = string
     skip_final_snapshot             = bool
     snapshot_identifier             = optional(string)
@@ -182,8 +184,27 @@ variable "allowed_cidr_blocks" {
   nullable    = false
 }
 
+variable "enabled_cloudwatch_logs_exports" {
+  description = "Set of log types to enable for exporting to CloudWatch logs."
+  type        = list(string)
+  default     = []
+}
+
+
 variable "copy_tags_to_snapshot" {
   description = "Copy all RDS Instance tags to snapshots."
   type        = bool
   default     = true
+}
+
+variable "monitoring_role_arn" {
+  description = "ARN for the KMS key to encrypt Performance Insights data. When specifying performance_insights_kms_key_id, performance_insights_enabled needs to be set to true."
+  type        = string
+  default     = null
+}
+
+variable "performance_insights_kms_key_id" {
+  description = "The ARN for the IAM role that permits RDS to send enhanced monitoring metrics to CloudWatch Logs."
+  type        = string
+  default     = null
 }
