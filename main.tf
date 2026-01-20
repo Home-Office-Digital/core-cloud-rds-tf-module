@@ -38,14 +38,6 @@ resource "aws_secretsmanager_secret_version" "rds_password" {
   secret_string = random_password.rds[each.key].result
 }
 
-resource "aws_secretsmanager_secret_rotation" "rds_password_rotation" {
-  for_each  = var.instances
-  secret_id = aws_secretsmanager_secret.rds_password[each.key].id
-  rotation_rules {
-    automatically_after_days = 7
-  }
-}
-
 resource "aws_security_group" "this" {
   for_each    = var.security_group_ids == null ? var.instances : {}
   name        = "${var.project_name}-${var.environment}-${each.key}-rds-sg"
