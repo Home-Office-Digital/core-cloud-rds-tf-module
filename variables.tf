@@ -11,6 +11,7 @@ variable "instances" {
     copy_tags_to_snapshot           = bool
     database_name                   = string
     database_user                   = string
+    dedicated_log_volume            = optional(bool)
     deletion_protection             = bool
     enabled_cloudwatch_logs_exports = optional(list(string), [])
     engine                          = string
@@ -212,6 +213,18 @@ variable "performance_insights_kms_key_id" {
 
 variable "monitoring_interval" {
   description = "The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance. To disable collecting Enhanced Monitoring metrics, specify 0. The default is 0. Valid Values: 0, 1, 5, 10, 15, 30, 60."
+  type        = number
+  default     = null
+}
+
+variable "dedicated_log_volume" {
+  description = "Use a dedicated log volume (DLV) for the DB instance. Requires Provisioned IOPS."
+  type        = bool
+  default     = null
+}
+
+variable "iops" {
+  description = "The amount of provisioned IOPS. Setting this implies a storage_type of 'io1' or 'io2'. Can only be set when storage_type is 'io1', 'io2' or 'gp3'. Cannot be specified for gp3 storage if the allocated_storage value is below a per-engine threshold."
   type        = number
   default     = null
 }

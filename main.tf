@@ -14,11 +14,6 @@ resource "aws_db_subnet_group" "this" {
   })
 }
 
-data "aws_security_group" "existing" {
-  for_each = var.security_group_ids != null ? var.security_group_ids : {}
-  id       = each.value
-}
-
 resource "random_password" "rds" {
   for_each         = var.instances
   length           = 16
@@ -94,6 +89,7 @@ resource "aws_db_instance" "this" {
   copy_tags_to_snapshot           = var.copy_tags_to_snapshot
   db_name                         = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_name : null
   db_subnet_group_name            = var.db_subnet_group_name != null ? data.aws_db_subnet_group.existing[0].name : aws_db_subnet_group.this[0].name
+  dedicated_log_volume            = var.dedicated_log_volume
   deletion_protection             = var.deletion_protection
   enabled_cloudwatch_logs_exports = var.enabled_cloudwatch_logs_exports
   engine                          = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine : null
@@ -101,6 +97,7 @@ resource "aws_db_instance" "this" {
   final_snapshot_identifier       = lookup(each.value, "final_snapshot_identifier", null)
   identifier                      = each.value.name
   instance_class                  = each.value.instance_class
+  iops                            = var.iops
   kms_key_id                      = var.kms_key_arn != null ? var.kms_key_arn : null
   maintenance_window              = each.value.maintenance_window
   monitoring_interval             = var.monitoring_interval
