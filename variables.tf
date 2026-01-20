@@ -8,8 +8,10 @@ variable "instances" {
     backup_retention_period         = number
     backup_window                   = string
     ca_cert_identifier              = string
+    copy_tags_to_snapshot           = bool
     database_name                   = string
     database_user                   = string
+    dedicated_log_volume            = optional(bool)
     deletion_protection             = bool
     enabled_cloudwatch_logs_exports = optional(list(string), [])
     engine                          = string
@@ -21,8 +23,11 @@ variable "instances" {
     kms_key_id                      = optional(string, null)
     maintenance_window              = string
     multi_az                        = bool
+    monitoring_interval             = optional(number, null)
+    monitoring_role_arn             = optional(string, null)
     name                            = string
     performance_insights_enabled    = bool
+    performance_insights_kms_key_id = optional(string, null)
     project_name                    = string
     skip_final_snapshot             = bool
     snapshot_identifier             = optional(string)
@@ -151,9 +156,8 @@ variable "tags" {
     environment-type = string
     owner-business   = string
     budget-holder    = string
-    source-repo      = string
   })
-  description = "The following tags must be applied to all resources: cost-centre, account-code, portfolio-id, project-id, service-id, environment-type, owner-business, budget-holder and source-repo"
+  description = "The following tags must be applied to all resources: cost-centre, account-code, portfolio-id, project-id, service-id, environment-type, owner-business and budget-holder"
   nullable    = false
 }
 
@@ -180,4 +184,47 @@ variable "allowed_cidr_blocks" {
   type        = list(string)
   default     = []
   nullable    = false
+}
+
+variable "enabled_cloudwatch_logs_exports" {
+  description = "Set of log types to enable for exporting to CloudWatch logs."
+  type        = list(string)
+  default     = []
+}
+
+
+variable "copy_tags_to_snapshot" {
+  description = "Copy all RDS Instance tags to snapshots."
+  type        = bool
+  default     = true
+}
+
+variable "monitoring_role_arn" {
+  description = "ARN for the KMS key to encrypt Performance Insights data. When specifying performance_insights_kms_key_id, performance_insights_enabled needs to be set to true."
+  type        = string
+  default     = null
+}
+
+variable "performance_insights_kms_key_id" {
+  description = "The ARN for the IAM role that permits RDS to send enhanced monitoring metrics to CloudWatch Logs."
+  type        = string
+  default     = null
+}
+
+variable "monitoring_interval" {
+  description = "The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance. To disable collecting Enhanced Monitoring metrics, specify 0. The default is 0. Valid Values: 0, 1, 5, 10, 15, 30, 60."
+  type        = number
+  default     = null
+}
+
+variable "dedicated_log_volume" {
+  description = "Use a dedicated log volume (DLV) for the DB instance. Requires Provisioned IOPS."
+  type        = bool
+  default     = null
+}
+
+variable "iops" {
+  description = "The amount of provisioned IOPS. Setting this implies a storage_type of 'io1' or 'io2'. Can only be set when storage_type is 'io1', 'io2' or 'gp3'. Cannot be specified for gp3 storage if the allocated_storage value is below a per-engine threshold."
+  type        = number
+  default     = null
 }
