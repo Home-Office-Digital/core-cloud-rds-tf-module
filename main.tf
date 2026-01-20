@@ -37,10 +37,18 @@ resource "aws_secretsmanager_secret" "rds_password" {
   })
 }
 
+
 resource "aws_secretsmanager_secret_version" "rds_password" {
   for_each      = var.instances
   secret_id     = aws_secretsmanager_secret.rds_password[each.key].id
   secret_string = random_password.rds[each.key].result
+}
+
+resource "aws_secretsmanager_secret_rotation" "rds_password_rotation" {
+  secret_id = aws_secretsmanager_secret.rds_password[each.key].id
+  rotation_rules {
+    automatically_after_days = 7
+  }
 }
 
 resource "aws_security_group" "this" {
@@ -61,7 +69,7 @@ resource "aws_security_group" "this" {
   egress {
     from_port = 0
     to_port   = 0
-    protocol  = "-1"
+    protocol  = "tcp"
     # Change this to your internal VPC CIDR or a specific monitoring IP. Egress should be restricted to internal VPC only
     cidr_blocks = var.allowed_cidr_blocks
     description = "Security group egress rule for ${each.key} RDS instance"
@@ -82,6 +90,7 @@ resource "aws_db_instance" "this" {
   backup_retention_period      = var.backup_retention_period
   backup_window                = var.backup_window
   ca_cert_identifier           = var.ca_cert_identifier
+  copy_tags_to_snapshot        = var.copy_tags_to_snapshot
   db_name                      = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_name : null
   db_subnet_group_name         = var.db_subnet_group_name != null ? data.aws_db_subnet_group.existing[0].name : aws_db_subnet_group.this[0].name
   deletion_protection          = var.deletion_protection
@@ -101,14 +110,7 @@ resource "aws_db_instance" "this" {
   storage_encrypted            = var.storage_encrypted
   skip_final_snapshot          = var.skip_final_snapshot
   username                     = lookup(each.value, "snapshot_identifier", null) == null ? var.database_user : null
-  vpc_security_group_ids = concat(
-    [
-      var.security_group_ids != null ?
-      data.aws_security_group.existing[each.key].id :
-      aws_security_group.this[each.key].id
-    ],
-    var.vpc_security_group_ids
-  )
+  vpc_security_group_ids       = concat([aws_security_group.this[each.key].id], var.vpc_security_group_ids)
 
   tags = merge(var.tags, {
     Name = each.value.name

@@ -58,3 +58,6 @@ eg:
 
   * Update egress logic, restricting to user defined cidr
 
+### [0.0.15] 2026-01-20
+
+  * Updating tags, adding copy tags to snapshot variable, adding secret rotation functionality and security group logic

@@ -8,6 +8,7 @@ variable "instances" {
     backup_retention_period         = number
     backup_window                   = string
     ca_cert_identifier              = string
+    copy_tags_to_snapshot           = bool
     database_name                   = string
     database_user                   = string
     deletion_protection             = bool
@@ -151,9 +152,8 @@ variable "tags" {
     environment-type = string
     owner-business   = string
     budget-holder    = string
-    source-repo      = string
   })
-  description = "The following tags must be applied to all resources: cost-centre, account-code, portfolio-id, project-id, service-id, environment-type, owner-business, budget-holder and source-repo"
+  description = "The following tags must be applied to all resources: cost-centre, account-code, portfolio-id, project-id, service-id, environment-type, owner-business and budget-holder"
   nullable    = false
 }
 
@@ -180,4 +180,10 @@ variable "allowed_cidr_blocks" {
   type        = list(string)
   default     = []
   nullable    = false
+}
+
+variable "copy_tags_to_snapshot" {
+  description = "Copy all RDS Instance tags to snapshots."
+  type        = bool
+  default     = true
 }
