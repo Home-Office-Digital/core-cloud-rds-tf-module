@@ -241,7 +241,7 @@ variable "manage_master_user_password" {
 variable "master_user_secret_kms_key_id" {
   description = "The Amazon Web Services KMS key identifier is the key ARN, key ID, alias ARN, or alias name for the KMS key."
   type        = string
-  default     = true
+  default     = null
 }
 
 variable "max_allocated_storage" {
