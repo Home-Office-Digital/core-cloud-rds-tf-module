@@ -32,19 +32,10 @@ resource "aws_secretsmanager_secret" "rds_password" {
   })
 }
 
-
 resource "aws_secretsmanager_secret_version" "rds_password" {
   for_each      = var.instances
   secret_id     = aws_secretsmanager_secret.rds_password[each.key].id
   secret_string = random_password.rds[each.key].result
-}
-
-resource "aws_secretsmanager_secret_rotation" "rds_password_rotation" {
-  for_each  = var.instances
-  secret_id = aws_secretsmanager_secret.rds_password[each.key].id
-  rotation_rules {
-    automatically_after_days = 7
-  }
 }
 
 resource "aws_security_group" "this" {
@@ -100,6 +91,7 @@ resource "aws_db_instance" "this" {
   iops                            = var.iops
   kms_key_id                      = var.kms_key_arn != null ? var.kms_key_arn : null
   maintenance_window              = each.value.maintenance_window
+  max_allocated_storage           = var.max_allocated_storage
   monitoring_interval             = var.monitoring_interval
   monitoring_role_arn             = var.monitoring_role_arn
   multi_az                        = var.multi_az
