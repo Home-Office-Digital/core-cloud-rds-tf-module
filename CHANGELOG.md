@@ -65,3 +65,9 @@ eg:
 ### [0.0.16] 2026-01-20
 
   * Adding RDS variables and secret rotation functionality
+
+
+### [0.0.17] 2026-01-21
+
+  * Adding RDS variable - max_allocated_storage
+
