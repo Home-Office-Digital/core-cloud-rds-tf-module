@@ -91,11 +91,10 @@ resource "aws_db_instance" "this" {
   iops                            = var.iops
   kms_key_id                      = var.kms_key_arn != null ? var.kms_key_arn : null
   maintenance_window              = each.value.maintenance_window
-  manage_master_user_password     = var.manage_master_user_password
-  master_user_secret_kms_key_id   = var.master_user_secret_kms_key_id
   monitoring_interval             = var.monitoring_interval
   monitoring_role_arn             = var.monitoring_role_arn
   multi_az                        = var.multi_az
+  password                        = aws_secretsmanager_secret_version.rds_password[each.key].secret_string
   performance_insights_enabled    = var.performance_insights_enabled
   performance_insights_kms_key_id = var.performance_insights_kms_key_id
   publicly_accessible             = var.publicly_accessible
