@@ -28,6 +28,7 @@ run "rds_with_new_security_group" {
     instances = {
       app = {
         allowed_cidr_blocks          = ["10.0.0.0/8"]
+        copy_tags_to_snapshot           = true
         auto_minor_version_upgrade   = true
         availability_zone            = null
         allocated_storage            = 20
@@ -91,6 +92,7 @@ run "rds_with_existing_security_group_and_subnet_group" {
       app = {
         // No allowed_cidr_blocks needed when using existing SG
         auto_minor_version_upgrade   = true
+        copy_tags_to_snapshot        = true
         availability_zone            = null
         allocated_storage            = 20
         backup_retention_period      = 7
