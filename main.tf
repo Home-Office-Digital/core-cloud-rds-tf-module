@@ -91,6 +91,7 @@ resource "aws_db_instance" "this" {
   iops                            = var.iops
   kms_key_id                      = var.kms_key_arn != null ? var.kms_key_arn : null
   maintenance_window              = each.value.maintenance_window
+  max_allocated_storage           = var.max_allocated_storage
   monitoring_interval             = var.monitoring_interval
   monitoring_role_arn             = var.monitoring_role_arn
   multi_az                        = var.multi_az

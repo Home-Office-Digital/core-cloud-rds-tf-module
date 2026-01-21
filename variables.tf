@@ -230,18 +230,6 @@ variable "iops" {
   default     = null
 }
 
-variable "manage_master_user_password" {
-  description = "Set to true to allow RDS to manage the master user password in Secrets Manager."
-  type        = bool
-  default     = false
-}
-
-variable "master_user_secret_kms_key_id" {
-  description = "The Amazon Web Services KMS key identifier is the key ARN, key ID, alias ARN, or alias name for the KMS key."
-  type        = string
-  default     = null
-}
-
 variable "max_allocated_storage" {
   description = "Specifies the maximum storage (in GiB) that Amazon RDS can automatically scale to for this DB instance."
   type        = number
