@@ -41,7 +41,7 @@ resource "aws_secretsmanager_secret_version" "rds_password" {
   "password": "${random_password.rds[each.key].result}",
   "engine": "${aws_db_instance.this.engine}",
   "host": "${aws_db_instance.this.endpoint}",
-  "port": ${aws_db_instance.this.port},
+  "port": "${aws_db_instance.this.port}",
   "dbClusterIdentifier": "${aws_db_instance.this.identifier}"
 }
 EOF
