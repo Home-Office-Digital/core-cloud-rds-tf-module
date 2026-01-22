@@ -35,7 +35,16 @@ resource "aws_secretsmanager_secret" "rds_password" {
 resource "aws_secretsmanager_secret_version" "rds_password" {
   for_each      = var.instances
   secret_id     = aws_secretsmanager_secret.rds_password[each.key].id
-  secret_string = random_password.rds[each.key].result
+  secret_string = <<EOF
+{
+  "username": "${aws_db_instance.this.username}",
+  "password": "${random_password.rds[each.key].result}",
+  "engine": "${aws_db_instance.this.engine}",
+  "host": "${aws_db_instance.this.endpoint}",
+  "port": ${aws_db_instance.this.port},
+  "dbClusterIdentifier": "${aws_db_instance.this.identifier}"
+}
+EOF
 }
 
 resource "aws_security_group" "this" {
