@@ -9,7 +9,7 @@ variable "instances" {
     backup_window                   = string
     ca_cert_identifier              = string
     copy_tags_to_snapshot           = bool
-    db_name                         = string
+    database_name                   = string
     database_user                   = string
     dedicated_log_volume            = optional(bool)
     deletion_protection             = bool
@@ -29,7 +29,6 @@ variable "instances" {
     name                            = string
     performance_insights_enabled    = bool
     performance_insights_kms_key_id = optional(string, null)
-    port                            = number
     project_name                    = string
     skip_final_snapshot             = bool
     snapshot_identifier             = optional(string)
@@ -235,10 +234,4 @@ variable "max_allocated_storage" {
   description = "Specifies the maximum storage (in GiB) that Amazon RDS can automatically scale to for this DB instance."
   type        = number
   default     = null
-}
-
-variable "db_name" {
-  description = "The database name."
-  type        = string
-  nullable    = false
 }
