@@ -32,21 +32,6 @@ resource "aws_secretsmanager_secret" "rds_password" {
   })
 }
 
-resource "aws_secretsmanager_secret_version" "rds_password" {
-  for_each      = var.instances
-  secret_id     = aws_secretsmanager_secret.rds_password[each.key].id
-  secret_string = <<EOF
-{
-  "username": "${aws_db_instance.this.username}",
-  "password": "${random_password.rds[each.key].result}",
-  "engine": "${var.engine}",
-  "host": "${aws_db_instance.this.endpoint}",
-  "port": "${var.port}",
-  "dbClusterIdentifier": "${aws_db_instance.this.identifier}"
-}
-EOF
-}
-
 resource "aws_security_group" "this" {
   for_each    = var.security_group_ids == null ? var.instances : {}
   name        = "${var.project_name}-${var.environment}-${each.key}-rds-sg"
@@ -125,4 +110,19 @@ resource "aws_db_instance" "this" {
     update = "90m"
     delete = "90m"
   }
+}
+
+resource "aws_secretsmanager_secret_version" "rds_password" {
+  for_each      = var.instances
+  secret_id     = aws_secretsmanager_secret.rds_password[each.key].id
+  secret_string = <<EOF
+{
+  "username": "${aws_db_instance.this.username}",
+  "password": "${random_password.rds[each.key].result}",
+  "engine": "${var.engine}",
+  "host": "${aws_db_instance.this.endpoint}",
+  "port": "${var.port}",
+  "dbClusterIdentifier": "${aws_db_instance.this.identifier}"
+}
+EOF
 }
