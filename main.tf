@@ -39,7 +39,7 @@ resource "aws_secretsmanager_secret_version" "rds_password" {
 {
   "username": "${aws_db_instance.this.username}",
   "password": "${random_password.rds[each.key].result}",
-  "engine": "${aws_db_instance.this.engine}",
+  "engine": "${var.engine}",
   "host": "${aws_db_instance.this.endpoint}",
   "port": "${aws_db_instance.this.port}",
   "dbClusterIdentifier": "${aws_db_instance.this.identifier}"
@@ -92,7 +92,7 @@ resource "aws_db_instance" "this" {
   dedicated_log_volume            = var.dedicated_log_volume
   deletion_protection             = var.deletion_protection
   enabled_cloudwatch_logs_exports = var.enabled_cloudwatch_logs_exports
-  engine                          = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine : null
+  engine                          = var.engine
   engine_version                  = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine_version : null
   final_snapshot_identifier       = lookup(each.value, "final_snapshot_identifier", null)
   identifier                      = each.value.name

@@ -235,3 +235,8 @@ variable "max_allocated_storage" {
   type        = number
   default     = null
 }
+
+variable "engine" {
+  description = "The database engine to use."
+  type        = string
+}
