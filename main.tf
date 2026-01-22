@@ -15,7 +15,6 @@ resource "aws_db_subnet_group" "this" {
 }
 
 resource "random_password" "rds" {
-  for_each         = var.instances
   length           = 16
   special          = true
   override_special = "!#$%^&*()-_=+[]{}|:;,.<>?"
@@ -33,6 +32,7 @@ resource "aws_secretsmanager_secret" "rds_password" {
 }
 
 resource "aws_secretsmanager_secret_version" "rds_password" {
+  for_each      = var.instances
   secret_id     = aws_secretsmanager_secret.rds_password[each.key].id
   secret_string = <<EOF
 {
