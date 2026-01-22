@@ -21,12 +21,12 @@ resource "random_password" "rds" {
 }
 
 resource "aws_secretsmanager_secret" "rds_password" {
-  name        = "${var.project_name}-${each.key}-rds-password"
-  description = "RDS master password for ${each.key}"
+  name        = "${var.project_name}-${var.db_name}-rds-password"
+  description = "RDS master password for ${var.db_name}"
   kms_key_id  = var.kms_key_arn != null ? var.kms_key_arn : null
 
   tags = merge(var.tags, {
-    Name = "${var.project_name}-${var.environment}-${each.key}-rds-sg"
+    Name = "${var.project_name}-${var.environment}-${var.db_name}-rds-sg"
   })
 }
 
@@ -75,7 +75,7 @@ resource "aws_db_instance" "this" {
   backup_window                   = var.backup_window
   ca_cert_identifier              = var.ca_cert_identifier
   copy_tags_to_snapshot           = var.copy_tags_to_snapshot
-  db_name                         = lookup(each.value, "snapshot_identifier", null) == null ? each.value.database_name : null
+  db_name                         = var.db_name
   db_subnet_group_name            = var.db_subnet_group_name != null ? data.aws_db_subnet_group.existing[0].name : aws_db_subnet_group.this[0].name
   dedicated_log_volume            = var.dedicated_log_volume
   deletion_protection             = var.deletion_protection

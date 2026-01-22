@@ -9,7 +9,7 @@ variable "instances" {
     backup_window                   = string
     ca_cert_identifier              = string
     copy_tags_to_snapshot           = bool
-    database_name                   = string
+    db_name                         = string
     database_user                   = string
     dedicated_log_volume            = optional(bool)
     deletion_protection             = bool
@@ -246,5 +246,11 @@ variable "engine" {
 variable "port" {
   description = "The port on which the DB accepts connections."
   type        = number
+  nullable    = false
+}
+
+variable "db_name" {
+  description = "The database name."
+  type        = string
   nullable    = false
 }
