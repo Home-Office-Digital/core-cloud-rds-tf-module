@@ -41,7 +41,7 @@ resource "aws_secretsmanager_secret_version" "rds_password" {
   "password": "${random_password.rds[each.key].result}",
   "engine": "${var.engine}",
   "host": "${aws_db_instance.this.endpoint}",
-  "port": "${aws_db_instance.this.port}",
+  "port": "${var.port}",
   "dbClusterIdentifier": "${aws_db_instance.this.identifier}"
 }
 EOF
@@ -106,6 +106,7 @@ resource "aws_db_instance" "this" {
   multi_az                        = var.multi_az
   password                        = aws_secretsmanager_secret_version.rds_password[each.key].secret_string
   performance_insights_enabled    = var.performance_insights_enabled
+  port                            = var.port
   performance_insights_kms_key_id = var.performance_insights_kms_key_id
   publicly_accessible             = var.publicly_accessible
   snapshot_identifier             = var.snapshot_identifier

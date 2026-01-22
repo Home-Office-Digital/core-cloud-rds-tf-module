@@ -29,6 +29,7 @@ variable "instances" {
     name                            = string
     performance_insights_enabled    = bool
     performance_insights_kms_key_id = optional(string, null)
+    port                            = number
     project_name                    = string
     skip_final_snapshot             = bool
     snapshot_identifier             = optional(string)
@@ -239,4 +240,11 @@ variable "max_allocated_storage" {
 variable "engine" {
   description = "The database engine to use."
   type        = string
+  nullable    = false
+}
+
+variable "port" {
+  description = "The port on which the DB accepts connections."
+  type        = number
+  nullable    = false
 }
