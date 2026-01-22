@@ -15,14 +15,12 @@ resource "aws_db_subnet_group" "this" {
 }
 
 resource "random_password" "rds" {
-  for_each         = var.instances
   length           = 16
   special          = true
   override_special = "!#$%^&*()-_=+[]{}|:;,.<>?"
 }
 
 resource "aws_secretsmanager_secret" "rds_password" {
-  for_each    = var.instances
   name        = "${var.project_name}-${each.key}-rds-password"
   description = "RDS master password for ${each.key}"
   kms_key_id  = var.kms_key_arn != null ? var.kms_key_arn : null
@@ -30,6 +28,11 @@ resource "aws_secretsmanager_secret" "rds_password" {
   tags = merge(var.tags, {
     Name = "${var.project_name}-${var.environment}-${each.key}-rds-sg"
   })
+}
+
+resource "aws_secretsmanager_secret_version" "rds_password" {
+  secret_id     = aws_secretsmanager_secret.rds_password.id
+  secret_string = random_password.rds.result
 }
 
 resource "aws_security_group" "this" {
@@ -89,7 +92,7 @@ resource "aws_db_instance" "this" {
   monitoring_interval             = var.monitoring_interval
   monitoring_role_arn             = var.monitoring_role_arn
   multi_az                        = var.multi_az
-  password                        = aws_secretsmanager_secret_version.rds_password[each.key].secret_string
+  password                        = aws_secretsmanager_secret_version.rds_password.secret_string
   performance_insights_enabled    = var.performance_insights_enabled
   port                            = var.port
   performance_insights_kms_key_id = var.performance_insights_kms_key_id
@@ -112,17 +115,3 @@ resource "aws_db_instance" "this" {
   }
 }
 
-resource "aws_secretsmanager_secret_version" "rds_password" {
-  for_each      = var.instances
-  secret_id     = aws_secretsmanager_secret.rds_password[each.key].id
-  secret_string = <<EOF
-{
-  "username": "${aws_db_instance.this.username}",
-  "password": "${random_password.rds[each.key].result}",
-  "engine": "${var.engine}",
-  "host": "${aws_db_instance.this.endpoint}",
-  "port": "${var.port}",
-  "dbClusterIdentifier": "${aws_db_instance.this.identifier}"
-}
-EOF
-}
