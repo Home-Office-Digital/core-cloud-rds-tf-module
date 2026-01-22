@@ -15,6 +15,7 @@ resource "aws_db_subnet_group" "this" {
 }
 
 resource "random_password" "rds" {
+  for_each         = var.instances
   length           = 16
   special          = true
   override_special = "!#$%^&*()-_=+[]{}|:;,.<>?"
