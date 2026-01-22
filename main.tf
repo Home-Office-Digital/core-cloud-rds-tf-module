@@ -80,7 +80,6 @@ resource "aws_db_instance" "this" {
   dedicated_log_volume            = var.dedicated_log_volume
   deletion_protection             = var.deletion_protection
   enabled_cloudwatch_logs_exports = var.enabled_cloudwatch_logs_exports
-  engine                          = var.engine
   engine_version                  = lookup(each.value, "snapshot_identifier", null) == null ? each.value.engine_version : null
   final_snapshot_identifier       = lookup(each.value, "final_snapshot_identifier", null)
   identifier                      = each.value.name
@@ -94,7 +93,6 @@ resource "aws_db_instance" "this" {
   multi_az                        = var.multi_az
   password                        = aws_secretsmanager_secret_version.rds_password.secret_string
   performance_insights_enabled    = var.performance_insights_enabled
-  port                            = var.port
   performance_insights_kms_key_id = var.performance_insights_kms_key_id
   publicly_accessible             = var.publicly_accessible
   snapshot_identifier             = var.snapshot_identifier

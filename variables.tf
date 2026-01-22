@@ -237,18 +237,6 @@ variable "max_allocated_storage" {
   default     = null
 }
 
-variable "engine" {
-  description = "The database engine to use."
-  type        = string
-  nullable    = false
-}
-
-variable "port" {
-  description = "The port on which the DB accepts connections."
-  type        = number
-  nullable    = false
-}
-
 variable "db_name" {
   description = "The database name."
   type        = string
