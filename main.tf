@@ -33,7 +33,6 @@ resource "aws_secretsmanager_secret" "rds_password" {
 }
 
 resource "aws_secretsmanager_secret_version" "rds_password" {
-  for_each      = var.instances
   secret_id     = aws_secretsmanager_secret.rds_password[each.key].id
   secret_string = <<EOF
 {
