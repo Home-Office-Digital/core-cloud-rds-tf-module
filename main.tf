@@ -14,6 +14,11 @@ resource "aws_db_subnet_group" "this" {
   })
 }
 
+data "aws_security_group" "existing" {
+  for_each = var.security_group_ids != null ? var.security_group_ids : {}
+  id       = each.value
+}
+
 resource "aws_security_group" "this" {
   for_each    = var.security_group_ids == null ? var.instances : {}
   name        = "${var.project_name}-${var.environment}-${each.key}-rds-sg"
