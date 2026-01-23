@@ -66,8 +66,6 @@ eg:
 
   * Adding RDS variables and secret rotation functionality
 
-
 ### [0.0.17] 2026-01-21
 
-  * Adding RDS variables - max_allocated_storage & manage_master_user_password
-
+  * Adding RDS variables - max_allocated_storage & manage_master_user_password. Adjusting secret rotation logic.

@@ -194,7 +194,6 @@ variable "enabled_cloudwatch_logs_exports" {
   default     = []
 }
 
-
 variable "copy_tags_to_snapshot" {
   description = "Copy all RDS Instance tags to snapshots."
   type        = bool
