@@ -22,6 +22,7 @@ variable "instances" {
     iops                            = optional(number, null)
     kms_key_id                      = optional(string, null)
     maintenance_window              = string
+    manage_master_user_password     = bool
     max_allocated_storage           = optional(number, null)
     multi_az                        = bool
     monitoring_interval             = optional(number, null)
@@ -193,7 +194,6 @@ variable "enabled_cloudwatch_logs_exports" {
   default     = []
 }
 
-
 variable "copy_tags_to_snapshot" {
   description = "Copy all RDS Instance tags to snapshots."
   type        = bool
@@ -234,4 +234,10 @@ variable "max_allocated_storage" {
   description = "Specifies the maximum storage (in GiB) that Amazon RDS can automatically scale to for this DB instance."
   type        = number
   default     = null
+}
+
+variable "manage_master_user_password" {
+  description = "Set to true to allow RDS to manage the master user password in Secrets Manager."
+  type        = bool
+  default     = true
 }
