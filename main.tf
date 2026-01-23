@@ -14,39 +14,6 @@ resource "aws_db_subnet_group" "this" {
   })
 }
 
-resource "random_password" "rds" {
-  for_each         = var.instances
-  length           = 16
-  special          = true
-  override_special = "!#$%^&*()-_=+[]{}|:;,.<>?"
-}
-
-resource "aws_secretsmanager_secret" "rds_password" {
-  for_each    = var.instances
-  name        = "${var.project_name}-${each.key}-rds-password"
-  description = "RDS master password for ${each.key}"
-  kms_key_id  = var.kms_key_arn != null ? var.kms_key_arn : null
-
-  tags = merge(var.tags, {
-    Name = "${var.project_name}-${var.environment}-${each.key}-rds-sg"
-  })
-}
-
-
-resource "aws_secretsmanager_secret_version" "rds_password" {
-  for_each      = var.instances
-  secret_id     = aws_secretsmanager_secret.rds_password[each.key].id
-  secret_string = random_password.rds[each.key].result
-}
-
-resource "aws_secretsmanager_secret_rotation" "rds_password_rotation" {
-  for_each  = var.instances
-  secret_id = aws_secretsmanager_secret.rds_password[each.key].id
-  rotation_rules {
-    automatically_after_days = 7
-  }
-}
-
 resource "aws_security_group" "this" {
   for_each    = var.security_group_ids == null ? var.instances : {}
   name        = "${var.project_name}-${var.environment}-${each.key}-rds-sg"
@@ -100,10 +67,11 @@ resource "aws_db_instance" "this" {
   iops                            = var.iops
   kms_key_id                      = var.kms_key_arn != null ? var.kms_key_arn : null
   maintenance_window              = each.value.maintenance_window
+  manage_master_user_password     = var.manage_master_user_password
+  max_allocated_storage           = var.max_allocated_storage
   monitoring_interval             = var.monitoring_interval
   monitoring_role_arn             = var.monitoring_role_arn
   multi_az                        = var.multi_az
-  password                        = aws_secretsmanager_secret_version.rds_password[each.key].secret_string
   performance_insights_enabled    = var.performance_insights_enabled
   performance_insights_kms_key_id = var.performance_insights_kms_key_id
   publicly_accessible             = var.publicly_accessible

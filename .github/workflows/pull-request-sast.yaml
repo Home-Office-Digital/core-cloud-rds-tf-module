@@ -1,4 +1,4 @@
-name: Validate Terraform with Trivy, Checkov and Sonarqube
+name: Validate Terraform with Checkov, TFLint and Sonarqube
 
 on:
   workflow_call:
