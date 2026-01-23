@@ -106,10 +106,6 @@ resource "aws_db_instance" "this" {
   username                        = lookup(each.value, "snapshot_identifier", null) == null ? var.database_user : null
   vpc_security_group_ids          = concat([aws_security_group.this[each.key].id], var.vpc_security_group_ids)
 
-  lifecycle {
-    ignore_changes = [password]
-  }
-
   tags = merge(var.tags, {
     Name = each.value.name
   })
