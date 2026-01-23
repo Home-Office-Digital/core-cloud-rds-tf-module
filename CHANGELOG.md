@@ -69,5 +69,5 @@ eg:
 
 ### [0.0.17] 2026-01-21
 
-  * Adding RDS variable - max_allocated_storage
+  * Adding RDS variables - max_allocated_storage & manage_master_user_password
 

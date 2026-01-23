@@ -1,40 +1,41 @@
 variable "instances" {
   description = "A map of RDS instance configurations."
   type = map(object({
-    allowed_cidr_blocks             = optional(list(string), [])
-    auto_minor_version_upgrade      = bool
-    availability_zone               = optional(string, null)
-    allocated_storage               = number
-    backup_retention_period         = number
-    backup_window                   = string
-    ca_cert_identifier              = string
-    copy_tags_to_snapshot           = bool
-    database_name                   = string
-    database_user                   = string
-    dedicated_log_volume            = optional(bool)
-    deletion_protection             = bool
-    enabled_cloudwatch_logs_exports = optional(list(string), [])
-    engine                          = string
-    engine_version                  = string
-    environment                     = string
-    final_snapshot_identifier       = optional(string, null)
-    instance_class                  = string
-    iops                            = optional(number, null)
-    kms_key_id                      = optional(string, null)
-    maintenance_window              = string
-    max_allocated_storage           = optional(number, null)
-    multi_az                        = bool
-    monitoring_interval             = optional(number, null)
-    monitoring_role_arn             = optional(string, null)
-    name                            = string
-    performance_insights_enabled    = bool
-    performance_insights_kms_key_id = optional(string, null)
-    project_name                    = string
-    skip_final_snapshot             = bool
-    snapshot_identifier             = optional(string)
-    storage_type                    = string
-    storage_encrypted               = bool
-    username                        = string
+    allowed_cidr_blocks                  = optional(list(string), [])
+    auto_minor_version_upgrade           = bool
+    availability_zone                    = optional(string, null)
+    allocated_storage                    = number
+    backup_retention_period              = number
+    backup_window                        = string
+    ca_cert_identifier                   = string
+    copy_tags_to_snapshot                = bool
+    database_name                        = string
+    database_user                        = string
+    dedicated_log_volume                 = optional(bool)
+    deletion_protection                  = bool
+    enabled_cloudwatch_logs_exports      = optional(list(string), [])
+    engine                               = string
+    engine_version                       = string
+    environment                          = string
+    final_snapshot_identifier            = optional(string, null)
+    instance_class                       = string
+    iops                                 = optional(number, null)
+    kms_key_id                           = optional(string, null)
+    maintenance_window                   = string
+    manage_master_user_password          = bool
+    max_allocated_storage                = optional(number, null)
+    multi_az                             = bool
+    monitoring_interval                  = optional(number, null)
+    monitoring_role_arn                  = optional(string, null)
+    name                                 = string
+    performance_insights_enabled         = bool
+    performance_insights_kms_key_id      = optional(string, null)
+    project_name                         = string
+    skip_final_snapshot                  = bool
+    snapshot_identifier                  = optional(string)
+    storage_type                         = string
+    storage_encrypted                    = bool
+    username                             = string
   }))
 }
 
@@ -234,4 +235,10 @@ variable "max_allocated_storage" {
   description = "Specifies the maximum storage (in GiB) that Amazon RDS can automatically scale to for this DB instance."
   type        = number
   default     = null
+}
+
+variable "manage_master_user_password" {
+  description = "Set to true to allow RDS to manage the master user password in Secrets Manager."
+  type        = bool
+  default     = true
 }
