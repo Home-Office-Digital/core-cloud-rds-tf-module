@@ -28,7 +28,7 @@ run "rds_with_new_security_group" {
     instances = {
       app = {
         allowed_cidr_blocks          = ["10.0.0.0/8"]
-        copy_tags_to_snapshot           = true
+        copy_tags_to_snapshot        = true
         auto_minor_version_upgrade   = true
         availability_zone            = null
         allocated_storage            = 20
