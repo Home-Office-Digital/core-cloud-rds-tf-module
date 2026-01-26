@@ -46,6 +46,7 @@ run "rds_with_new_security_group" {
         iops                         = null
         kms_key_id                   = null
         maintenance_window           = "sun:06:00-sun:07:00"
+        manage_master_user_password  = true
         multi_az                     = false
         name                         = "app-rds"
         performance_insights_enabled = true
@@ -109,6 +110,7 @@ run "rds_with_existing_security_group_and_subnet_group" {
         iops                         = null
         kms_key_id                   = null
         maintenance_window           = "sun:06:00-sun:07:00"
+        manage_master_user_password  = true
         multi_az                     = false
         name                         = "app-rds"
         performance_insights_enabled = true
