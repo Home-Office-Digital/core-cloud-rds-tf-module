@@ -22,6 +22,8 @@ jobs:
   RunTerraformValidation:
     name: Run Terraform SAST
     runs-on: ubuntu-latest
+    env:
+      TF_INPUT: "false"
 
     steps:
       - name: Clone the Repository
@@ -32,14 +34,17 @@ jobs:
         with:
           terraform_version: ~1.9.0
 
-      - name: terraform init
-        run: terraform init
+      - name: terraform init (no backend)
+        run: terraform init -backend=false
+
+      - name: Terraform tests
+        run: terraform test -no-color
 
       - name: terraform validate
         run: terraform validate
 
       - name: Terraform Format
-        run: terraform fmt -check
+        run: terraform fmt -check -recursive
       
       - name: TFLint
         id: lint
@@ -55,6 +60,4 @@ jobs:
   checkov-scan:
       uses: UKHomeOffice/core-cloud-workflow-checkov-sast-scan/.github/workflows/checkov-scan-base.yaml@1.9.0
 
-#      - name: Terraform tests
-#        run : terraform test
-#        env:
+

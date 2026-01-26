@@ -135,4 +135,3 @@ No modules.
 | <a name="output_instance_ids"></a> [instance\_ids](#output\_instance\_ids) | A map of RDS instance IDs |
 | <a name="output_rds_instance_ids"></a> [rds\_instance\_ids](#output\_rds\_instance\_ids) | A map of RDS instance IDs |
 | <a name="output_security_group_ids"></a> [security\_group\_ids](#output\_security\_group\_ids) | n/a |
-<!-- END_TF_DOCS -->
