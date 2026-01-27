@@ -76,4 +76,4 @@ eg:
 
 ### [0.1.1] 2026-01-27
 
-  * Adding data block for existing SG Group
+  * Adjusting vpc_security_group_ids
