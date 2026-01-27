@@ -69,3 +69,11 @@ eg:
 ### [0.0.17] 2026-01-21
 
   * Adding RDS variables - max_allocated_storage & manage_master_user_password. Adjusting secret rotation logic.
+
+### [0.1.0] 2026-01-26
+
+  * Adding RDS terraform tests
+
+### [0.1.1] 2026-01-27
+
+  * Adjusting vpc_security_group_ids
