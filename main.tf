@@ -14,11 +14,6 @@ resource "aws_db_subnet_group" "this" {
   })
 }
 
-data "aws_security_group" "existing" {
-  for_each = var.security_group_ids != null ? var.security_group_ids : {}
-  id       = each.value
-}
-
 resource "aws_security_group" "this" {
   for_each    = var.security_group_ids == null ? var.instances : {}
   name        = "${var.project_name}-${var.environment}-${each.key}-rds-sg"
@@ -85,7 +80,7 @@ resource "aws_db_instance" "this" {
   storage_encrypted               = var.storage_encrypted
   skip_final_snapshot             = var.skip_final_snapshot
   username                        = lookup(each.value, "snapshot_identifier", null) == null ? var.database_user : null
-  vpc_security_group_ids          = var.security_group_ids != null ? concat([var.security_group_ids[each.key]], var.vpc_security_group_ids) : concat([var.security_group_ids != null ? data.aws_security_group.existing[each.key].id : aws_security_group.this[each.key].id], var.vpc_security_group_ids)
+  vpc_security_group_ids          = var.security_group_ids != null ? concat([var.security_group_ids[each.key]], var.vpc_security_group_ids) : [aws_security_group.this[each.key].id]
 
   tags = merge(var.tags, {
     Name = each.value.name
