@@ -77,3 +77,7 @@ eg:
 ### [0.1.1] 2026-01-27
 
   * Adjusting vpc_security_group_ids
+
+### [0.1.2] 2026-01-28
+
+  * Adding further detail to the RDS Module README
