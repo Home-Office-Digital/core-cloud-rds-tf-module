@@ -26,7 +26,7 @@ Terraform validate, Terraform fmt, TFLint, Checkov scan, Sonarqube scan and Sema
 
 ## Terraform Tests
 
-All tests are located in the test/ folder and uses Terraform test. These are written and maintained by the Core Cloud QA team.  \
+All module tests are located in the test/ folder and uses Terraform test. These are written and maintained by the Core Cloud QA team.  \
 The test files found in this folder validate the RDS module configuration.  \
 Please refer to the [Official Hashicorp Terraform Test documentation](https://developer.hashicorp.com/terraform/language/tests).
 
@@ -36,7 +36,7 @@ This module will create the following:
 - DB instance (MySQL, Postgres, SQL Server, Oracle)
 - DB Subnet Group
 - DB Security Group
-- AWS Secrets Manager RDS Secret (7 Day automatic rotation enabled by default - Adjustment to rotation schedule or opt out via AWS Console). For guidance, this is [documented here](https://docs.aws.amazon.com/secretsmanager/latest/userguide/cancel-automatic-rotation.html).
+- AWS Secrets Manager AWS Managed RDS Secret (7 Day automatic rotation enabled by default - Adjustment to rotation schedule or opt out via AWS Console). For guidance, this is [rotation disable documented here](https://docs.aws.amazon.com/secretsmanager/latest/userguide/cancel-automatic-rotation.html) and [rotation schedule adjustment documented here](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_managed.html).
 
 Recommended settings:
 
