@@ -1,11 +1,57 @@
-## Core Cloud RDS Module
+# Core Cloud RDS Module
 
-This RDS Module is written and maintained by the Core Cloud Platform team and includes the following checks and scans:
+This RDS Child Module is written and maintained by the Core Cloud Platform team and includes the following checks and scans:
 Terraform validate, Terraform fmt, TFLint, Checkov scan, Sonarqube scan and Semantic versioning - MAJOR.MINOR.PATCH.
 
-## Usage
+## Module Structure
 
-See the below example configuration:
+<strong>---| .github</strong>  
+&nbsp;&nbsp;&nbsp;&nbsp;<strong>---| [dependabot.yaml](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/.github/dependabot.yaml)</strong> - Checks repository daily for any dependency updates and raises a PR into main for review.  \
+&nbsp;&nbsp;&nbsp;&nbsp;<strong>---| workflows</strong> \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>---| [pull-request-sast.yaml](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/.github/workflows/pull-request-sast.yaml)</strong> - Workflow containing terraform init, terraform validate, terraform fmt - referencing Core Cloud TFLint, Checkov scan and Sonarqube scan shared workflows. Runs on pull request and merge to main branch. \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>---| [pull-request-semver-label-check.yaml](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/.github/workflows/pull-request-semver-label-check.yaml)</strong> - Verifies all PRs to main raised in the module must have an appropriate semver label: major/minor/patch. \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>---| [pull-request-semver-tag-merge.yaml](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/.github/workflows/pull-request-semver-tag-merge.yaml)</strong> - Calculates the new semver value depending on the PR label and tags the repository with the correct tag. \
+<strong>---| tests</strong> \
+&nbsp;&nbsp;<strong>---| [rds-basic.tftest.hcl](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/tests/rds-basic.tftest.hcl)</strong> \
+<strong>---| [CHANGELOG.md](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/CHANGELOG.md)</strong> - Contains all significant changes in relation to a semver tag made to this module. \
+<strong>---| [CODEOWNERS](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/CODEOWNERS)</strong> \
+<strong>---| [CONTRIBUTING.md](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/LICENSE.md)</strong>  \
+<strong>---| [LICENSE.md](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/LICENSE.md)</strong>  \
+<strong>---| [README.md](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/README.md)</strong>  \
+<strong>---| [locals.tf](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/locals.tf)</strong> - Contains RDS Engine respective ports so port is dynamically picked up here when engine is provided in configuration.  \
+<strong>---| [main.tf](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/main.tf)</strong> - Contains the main set of configuration for this module.  \
+<strong>---| [outputs.tf](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/outputs.tf)</strong> - Contain the output definitions for this module.  \
+<strong>---| [variables.tf](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/variables.tf)</strong> - Contains the declarations for module variables, all variables have a defined type and short description outlining their purpose.  \
+<strong>---| [versions.tf](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/versions.tf)</strong> - Contains the providers needed by the module.  
+
+## Terraform Tests
+
+All module tests are located in the test/ folder and uses Terraform test. These are written and maintained by the Core Cloud QA team.  \
+The test files found in this folder validate the RDS module configuration.  \
+Please refer to the [Official Hashicorp Terraform Test documentation](https://developer.hashicorp.com/terraform/language/tests).
+
+## Usage 
+
+This module will create the following:
+- DB instance (MySQL, Postgres, SQL Server, Oracle)
+- DB Subnet Group
+- DB Security Group
+- AWS Secrets Manager AWS Managed RDS Secret (7 Day automatic rotation enabled by default - Adjustment to rotation schedule or opt out via AWS Console). For guidance, this is [rotation disable documented here](https://docs.aws.amazon.com/secretsmanager/latest/userguide/cancel-automatic-rotation.html) and [rotation schedule adjustment documented here](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotate-secrets_managed.html).
+
+Recommended settings:
+
+- Enable deletion protection
+- Adhere to Core Cloud mandatory tags
+- AWS Managed Secrets Manager RDS secrets should have automatic rotation enabled
+- Enable enhanced monitoring and performance insights
+- Enable copy tags to snapshots
+- Automatic minor upgrades
+- Enable Multi-AZ
+- Enable encryption
+- Enable automated backups & Sufficient backup retention period
+- Disable public accessibility
+
+See the below example configuration (We recommend one file per environment containing all RDS instances using this module):
 
 ```
 terraform {
@@ -14,12 +60,11 @@ terraform {
 
 inputs = {
   allowed_cidr_blocks  = [x.x.x.x/x]
-  db_subnet_group_name = "test-group"
+  db_subnet_group_name = "<project_name>-<environment>-subnet-group"
   environment          = "test"
   project_name         = "test-project"
   subnet_ids           = ["xxx"]
   vpc_id               = "xxx"
-  subnet_ids           = ["xxx"]
 
   # RDS Instances Configuration
   instances = {
@@ -33,20 +78,48 @@ inputs = {
       database_name                   = "test"
       database_user                   = "test"
       deletion_protection             = true
-      enabled_cloudwatch_logs_exports = ["xxx" , "xxx"]
+      enabled_cloudwatch_logs_exports = ["postgresql"]
       engine                          = "postgres"
-      engine_version                  = "xxx"
+      engine_version                  = "xx"
       environment                     = "test"
       instance_class                  = "db.t4g.micro"
       maintenance_window              = "Mon:04:00-Mon:05:00"
+      manage_master_user_password     = true
       multi_az                        = true
       name                            = "test"
       performance_insights_enabled    = true
-      performance_insights_kms_key_id = "xxx"
+      project_name                    = "test-project"
       skip_final_snapshot             = false
       storage_type                    = "gp3"
       storage_encrypted               = true
+      username                        = "test"
     }
+    test-2 = {
+      allocated_storage               = 20
+      auto_minor_version_upgrade      = true
+      backup_retention_period         = 7
+      backup_window                   = "22:00-03:00"
+      ca_cert_identifier              = "rds-ca-rsa2048-g1"
+      copy_tags_to_snapshot           = true
+      database_name                   = "test"
+      database_user                   = "test"
+      deletion_protection             = true
+      enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
+      engine                          = "postgres"
+      engine_version                  = "xx"
+      environment                     = "test"
+      instance_class                  = "db.t4g.micro"
+      maintenance_window              = "Mon:04:00-Mon:05:00"
+      manage_master_user_password     = true
+      multi_az                        = true
+      name                            = "test"
+      performance_insights_enabled    = true
+      project_name                    = "test-project"
+      skip_final_snapshot             = false
+      storage_type                    = "gp3"
+      storage_encrypted               = true
+      username                        = "test"
+    }    
   }
 
   # Tags for all resources
@@ -62,6 +135,7 @@ inputs = {
   }
 }
 
+```
 
 ## Requirements
 
@@ -135,4 +209,3 @@ No modules.
 | <a name="output_instance_ids"></a> [instance\_ids](#output\_instance\_ids) | A map of RDS instance IDs |
 | <a name="output_rds_instance_ids"></a> [rds\_instance\_ids](#output\_rds\_instance\_ids) | A map of RDS instance IDs |
 | <a name="output_security_group_ids"></a> [security\_group\_ids](#output\_security\_group\_ids) | n/a |
-<!-- END_TF_DOCS -->
