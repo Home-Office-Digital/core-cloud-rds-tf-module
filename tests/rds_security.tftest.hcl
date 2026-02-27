@@ -7,8 +7,6 @@ mock_provider "random" {}
     environment  = "dev"
     vpc_id       = "vpc-00000000000000000"
     subnet_ids   = ["subnet-aaaaaaaaaaaaaaaaa", "subnet-bbbbbbbbbbbbbbbbb"]
-    region       = "eu-west-2"
-    source-repo  = "github.com/UKHomeOffice/core-cloud-rds-tf-module"
 
     instances = {
       secure-db = {
@@ -44,7 +42,17 @@ mock_provider "random" {}
       }
     }
 
-  tags = {}
+    tags = {
+      cost-centre      = "CC1001"
+      account-code     = "AC2002"
+      portfolio-id     = "PF3003"
+      project-id       = "PR4004"
+      service-id       = "SV5005"
+      environment-type = "nonprod"
+      owner-business   = "platform"
+      budget-holder    = "finops"
+      source-repo      = "UKHomeOffice/core-cloud-rds-tf-module"
+    }
 }
 
 run "validate_storage_encryption" {

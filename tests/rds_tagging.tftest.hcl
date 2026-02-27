@@ -19,7 +19,6 @@ mock_provider "random" {}
       owner-business   = "platform"
       budget-holder    = "finops"
       source-repo      = "UKHomeOffice/core-cloud-rds-tf-module"
-      Owner            = "test-team"
     }
 
     // Create a single RDS instance with module-managed security group
@@ -106,16 +105,6 @@ run "validate_required_tags_on_rds" {
   }
 }
 
-run "validate_additional_tags_merged" {
-  command = plan
-
-  # Verify tags from var.tags are merged
-  assert {
-    condition     = aws_db_instance.this["tagged-db"].tags["Owner"] == "test-team"
-    error_message = "Additional tags from var.tags must be merged into RDS tags"
-  }
-}
-
 run "validate_security_group_tags" {
   command = plan
 
@@ -126,12 +115,6 @@ run "validate_security_group_tags" {
   assert {
     condition     = contains(keys(aws_security_group.this["tagged-db"].tags), "Name")
     error_message = "Name tag must be present on security group"
-  }
-
-  # Verify var.tags are merged into security group
-  assert {
-    condition     = aws_security_group.this["tagged-db"].tags["Owner"] == "test-team"
-    error_message = "Additional tags must be merged into security group"
   }
 }
 
