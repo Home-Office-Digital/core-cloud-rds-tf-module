@@ -81,3 +81,7 @@ eg:
 ### [0.1.2] 2026-01-28
 
   * Adding further detail to the RDS Module README
+
+### [0.1.3] 2026-02-27
+
+  * Adding further RDS Terraform tests and adjusting tagging.

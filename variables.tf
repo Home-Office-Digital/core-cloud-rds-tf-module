@@ -158,6 +158,7 @@ variable "tags" {
     environment-type = string
     owner-business   = string
     budget-holder    = string
+    source-repo      = string
   })
   description = "The following tags must be applied to all resources: cost-centre, account-code, portfolio-id, project-id, service-id, environment-type, owner-business and budget-holder"
   nullable    = false
