@@ -1,6 +1,5 @@
-// Mock providers to avoid real AWS/random calls during tests.
+// Mock providers to avoid real AWS calls during tests.
 mock_provider "aws" {}
-mock_provider "random" {}
 
   variables {
     project_name = "demo"
