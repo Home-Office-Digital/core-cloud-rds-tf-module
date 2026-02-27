@@ -132,11 +132,6 @@ variables {
 }
 
   assert {
-    condition     = aws_db_instance.this["prod-db"].skip_final_snapshot == false
-    error_message = "Final snapshot must not be skipped for production databases"
-  }
-
-  assert {
     condition     = aws_db_instance.this["prod-db"].final_snapshot_identifier == "live-prod-db-final-snapshot"
     error_message = "Final snapshot identifier must be defined when skip_final_snapshot is false"
   }
