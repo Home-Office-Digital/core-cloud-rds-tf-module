@@ -85,3 +85,7 @@ eg:
 ### [0.1.3] 2026-02-27
 
   * Adding further RDS Terraform tests and adjusting tagging.
+
+### [0.1.4] 2026-03-27
+
+  * Adding Dependabot PR workflow.
