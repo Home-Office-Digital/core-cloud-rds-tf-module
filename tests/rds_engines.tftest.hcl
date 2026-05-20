@@ -18,6 +18,7 @@ mock_provider "aws" {}
       owner-business   = "platform"
       budget-holder    = "finops"
       source-repo      = "UKHomeOffice/core-cloud-rds-tf-module"
+      hosting-platform = "test-platform"
     }
 
     // Create a single RDS instance with module-managed security group

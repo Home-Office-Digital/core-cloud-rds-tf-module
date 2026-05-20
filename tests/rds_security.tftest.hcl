@@ -51,6 +51,7 @@ variables {
       owner-business   = "platform"
       budget-holder    = "finops"
       source-repo      = "UKHomeOffice/core-cloud-rds-tf-module"
+      hosting-platform = "test-platform"
     }
 }
 
