@@ -18,6 +18,7 @@ mock_provider "aws" {}
       owner-business   = "platform"
       budget-holder    = "finops"
       source-repo      = "UKHomeOffice/core-cloud-rds-tf-module"
+      hosting-platform = "test-platform"
     }
 
     // Create a single RDS instance with module-managed security group
@@ -101,6 +102,11 @@ run "validate_required_tags_on_rds" {
   assert {
     condition     = contains(keys(aws_db_instance.this["tagged-db"].tags), "source-repo")
     error_message = "source-repo tag must be present on RDS instance"
+  }
+
+  assert {
+    condition     = contains(keys(aws_db_instance.this["tagged-db"].tags), "hosting-platform")
+    error_message = "hosting-platform tag must be present on RDS instance"
   }
 }
 
