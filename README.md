@@ -6,23 +6,23 @@ Terraform validate, Terraform fmt, TFLint, Checkov scan, Sonarqube scan and Sema
 ## Module Structure
 
 <strong>---| .github</strong>  
-&nbsp;&nbsp;&nbsp;&nbsp;<strong>---| [dependabot.yaml](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/.github/dependabot.yaml)</strong> - Checks repository daily for any dependency updates and raises a PR into main for review.  \
+&nbsp;&nbsp;&nbsp;&nbsp;<strong>---| [dependabot.yaml](https://github.com/Home-Office-Digital/core-cloud-rds-tf-module/blob/main/.github/dependabot.yaml)</strong> - Checks repository daily for any dependency updates and raises a PR into main for review.  \
 &nbsp;&nbsp;&nbsp;&nbsp;<strong>---| workflows</strong> \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>---| [pull-request-sast.yaml](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/.github/workflows/pull-request-sast.yaml)</strong> - Workflow containing terraform init, terraform validate, terraform fmt - referencing Core Cloud TFLint, Checkov scan and Sonarqube scan shared workflows. Runs on pull request and merge to main branch. \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>---| [pull-request-semver-label-check.yaml](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/.github/workflows/pull-request-semver-label-check.yaml)</strong> - Verifies all PRs to main raised in the module must have an appropriate semver label: major/minor/patch. \
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>---| [pull-request-semver-tag-merge.yaml](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/.github/workflows/pull-request-semver-tag-merge.yaml)</strong> - Calculates the new semver value depending on the PR label and tags the repository with the correct tag. \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>---| [pull-request-sast.yaml](https://github.com/Home-Office-Digital/core-cloud-rds-tf-module/blob/main/.github/workflows/pull-request-sast.yaml)</strong> - Workflow containing terraform init, terraform validate, terraform fmt - referencing Core Cloud TFLint, Checkov scan and Sonarqube scan shared workflows. Runs on pull request and merge to main branch. \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>---| [pull-request-semver-label-check.yaml](https://github.com/Home-Office-Digital/core-cloud-rds-tf-module/blob/main/.github/workflows/pull-request-semver-label-check.yaml)</strong> - Verifies all PRs to main raised in the module must have an appropriate semver label: major/minor/patch. \
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>---| [pull-request-semver-tag-merge.yaml](https://github.com/Home-Office-Digital/core-cloud-rds-tf-module/blob/main/.github/workflows/pull-request-semver-tag-merge.yaml)</strong> - Calculates the new semver value depending on the PR label and tags the repository with the correct tag. \
 <strong>---| tests</strong> \
-&nbsp;&nbsp;<strong>---| [rds-basic.tftest.hcl](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/tests/rds-basic.tftest.hcl)</strong> \
-<strong>---| [CHANGELOG.md](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/CHANGELOG.md)</strong> - Contains all significant changes in relation to a semver tag made to this module. \
-<strong>---| [CODEOWNERS](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/CODEOWNERS)</strong> \
-<strong>---| [CONTRIBUTING.md](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/LICENSE.md)</strong>  \
-<strong>---| [LICENSE.md](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/LICENSE.md)</strong>  \
-<strong>---| [README.md](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/README.md)</strong>  \
-<strong>---| [locals.tf](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/locals.tf)</strong> - Contains RDS Engine respective ports so port is dynamically picked up here when engine is provided in configuration.  \
-<strong>---| [main.tf](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/main.tf)</strong> - Contains the main set of configuration for this module.  \
-<strong>---| [outputs.tf](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/outputs.tf)</strong> - Contain the output definitions for this module.  \
-<strong>---| [variables.tf](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/variables.tf)</strong> - Contains the declarations for module variables, all variables have a defined type and short description outlining their purpose.  \
-<strong>---| [versions.tf](https://github.com/UKHomeOffice/core-cloud-rds-tf-module/blob/main/versions.tf)</strong> - Contains the providers needed by the module.  
+&nbsp;&nbsp;<strong>---| [rds-basic.tftest.hcl](https://github.com/Home-Office-Digital/core-cloud-rds-tf-module/blob/main/tests/rds-basic.tftest.hcl)</strong> \
+<strong>---| [CHANGELOG.md](https://github.com/Home-Office-Digital/core-cloud-rds-tf-module/blob/main/CHANGELOG.md)</strong> - Contains all significant changes in relation to a semver tag made to this module. \
+<strong>---| [CODEOWNERS](https://github.com/Home-Office-Digital/core-cloud-rds-tf-module/blob/main/CODEOWNERS)</strong> \
+<strong>---| [CONTRIBUTING.md](https://github.com/Home-Office-Digital/core-cloud-rds-tf-module/blob/main/LICENSE.md)</strong>  \
+<strong>---| [LICENSE.md](https://github.com/Home-Office-Digital/core-cloud-rds-tf-module/blob/main/LICENSE.md)</strong>  \
+<strong>---| [README.md](https://github.com/Home-Office-Digital/core-cloud-rds-tf-module/blob/main/README.md)</strong>  \
+<strong>---| [locals.tf](https://github.com/Home-Office-Digital/core-cloud-rds-tf-module/blob/main/locals.tf)</strong> - Contains RDS Engine respective ports so port is dynamically picked up here when engine is provided in configuration.  \
+<strong>---| [main.tf](https://github.com/Home-Office-Digital/core-cloud-rds-tf-module/blob/main/main.tf)</strong> - Contains the main set of configuration for this module.  \
+<strong>---| [outputs.tf](https://github.com/Home-Office-Digital/core-cloud-rds-tf-module/blob/main/outputs.tf)</strong> - Contain the output definitions for this module.  \
+<strong>---| [variables.tf](https://github.com/Home-Office-Digital/core-cloud-rds-tf-module/blob/main/variables.tf)</strong> - Contains the declarations for module variables, all variables have a defined type and short description outlining their purpose.  \
+<strong>---| [versions.tf](https://github.com/Home-Office-Digital/core-cloud-rds-tf-module/blob/main/versions.tf)</strong> - Contains the providers needed by the module.  
 
 ## Terraform Tests
 
@@ -55,7 +55,7 @@ See the below example configuration (We recommend one file per environment conta
 
 ```
 terraform {
-  source = "https://github.com/UKHomeOffice/core-cloud-rds-tf-module.git?ref={tag}"
+  source = "https://github.com/Home-Office-Digital/core-cloud-rds-tf-module.git?ref={tag}"
 }
 
 inputs = {

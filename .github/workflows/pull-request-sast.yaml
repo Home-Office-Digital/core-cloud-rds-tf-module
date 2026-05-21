@@ -49,15 +49,15 @@ jobs:
       - name: TFLint
         id: lint
         if: success() || failure()
-        uses: UKHomeOffice/core-cloud-workflow-tflint-scan@main
+        uses: Home-Office-Digital/core-cloud-workflow-tflint-scan@main
 
   sonarqube-scanner:
-      uses: UKHomeOffice/core-cloud-workflow-sonarqube-scan/.github/workflows/sonarqube-scan.yaml@1.1.6
+      uses: Home-Office-Digital/core-cloud-workflow-sonarqube-scan/.github/workflows/sonarqube-scan.yaml@1.1.6
       secrets:
         sonar_token: ${{ secrets.sonar_token }}
         sonar_host_url: ${{ secrets.sonar_host_url }}
 
   checkov-scan:
-      uses: UKHomeOffice/core-cloud-workflow-checkov-sast-scan/.github/workflows/checkov-scan-base.yaml@1.9.0
+      uses: Home-Office-Digital/core-cloud-workflow-checkov-sast-scan/.github/workflows/checkov-scan-base.yaml@1.9.0
 
 

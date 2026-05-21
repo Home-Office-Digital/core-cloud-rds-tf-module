@@ -17,7 +17,7 @@ mock_provider "aws" {}
       environment-type = "nonprod"
       owner-business   = "platform"
       budget-holder    = "finops"
-      source-repo      = "UKHomeOffice/core-cloud-rds-tf-module"
+      source-repo      = "Home-Office-Digital/core-cloud-rds-tf-module"
       hosting-platform = "test-platform"
     }
 
