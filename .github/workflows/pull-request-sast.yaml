@@ -52,7 +52,9 @@ jobs:
         uses: Home-Office-Digital/core-cloud-workflow-terraform-actions/actions/validate@8426dac89fd06a74aad9788601029c12be3984c6 # 1.2.1
 
       - name: Terraform Format
-        uses: Home-Office-Digital/core-cloud-workflow-terraform-actions/actions/fmt@8426dac89fd06a74aad9788601029c12be3984c6 # 1.2.1
+        uses: Home-Office-Digital/core-cloud-workflow-terraform-actions/actions/fmt@hotfix/fmt-recursive
+        with:
+          recursive: false
 
       - name: TFLint
         id: lint
