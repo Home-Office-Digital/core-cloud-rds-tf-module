@@ -93,3 +93,7 @@ eg:
 ### [0.1.5] 2026-05-20
 
   * Updating terraform version and mandatory tag.
+
+### [0.1.6] 2026-07-28
+
+  * Updating sast workflow to meet org standards.
