@@ -62,23 +62,11 @@ inputs = {
   allowed_cidr_blocks  = [x.x.x.x/x]
   db_subnet_group_name = "<project_name>-<environment>-subnet-group"
   dns_zone             = "example.service.gov.uk"
-  dns_type             = "CNAME"
   dns_ttl              = 300
   environment          = "test"
   project_name         = "test-project"
   subnet_ids           = ["xxx"]
   vpc_id               = "xxx"
-
-  # DNS records are created only for instances that set instances[*].dns.name.
-  # dns_zone must be a private Route53 hosted zone.
-
-  # Optional per-instance parameter/option group configuration:
-  # - Set parameter_group_name or option_group_name to attach an existing group.
-  # - Set create_parameter_group/create_option_group to create a new group.
-  # - Reuse the same existing group name in multiple instances to share one group.
-  # - Module-created groups are per-instance and cannot be shared.
-  # - PostgreSQL instances can use parameter groups.
-  # - For PostgreSQL option groups, use AWS defaults only (leave option_group_name unset, or pass default:*).
 
   # RDS Instances Configuration
   instances = {
@@ -102,8 +90,9 @@ inputs = {
       multi_az                        = true
       name                            = "test"
       performance_insights_enabled    = true
+      # Set create_parameter_group/create_option_group to create a new group.
       create_parameter_group          = true
-      parameter_group_name            = "test-postgres-parameter-group"
+      parameter_group_name            = "new-postgres-parameter-group"
       parameter_group_family          = "postgres15"
       parameter_group_parameters = [
         {
@@ -140,7 +129,8 @@ inputs = {
       multi_az                        = true
       name                            = "test"
       performance_insights_enabled    = true
-      parameter_group_name            = "shared-existing-postgres-parameter-group"
+      # Set parameter_group_name or option_group_name to attach an existing group.
+      parameter_group_name            = "existing-postgres-parameter-group"
       project_name                    = "test-project"
       skip_final_snapshot             = false
       storage_type                    = "gp3"
@@ -215,11 +205,10 @@ No modules.
 | <a name="input_dedicated_log_volume"></a> [dedicated\_log\_volume](#input\_dedicated\_log\_volume) | Use a dedicated log volume (DLV) for the DB instance. Requires Provisioned IOPS. | `bool` | `null` | no |
 | <a name="input_deletion_protection"></a> [deletion\_protection](#input\_deletion\_protection) | Enables deletion protection for the RDS instance. When set to true, the instance cannot be deleted unless this setting is disabled. | `bool` | `true` | no |
 | <a name="input_dns_ttl"></a> [dns\_ttl](#input\_dns\_ttl) | Time to live, in seconds, for Route53 DNS records created for RDS endpoints. | `number` | `300` | no |
-| <a name="input_dns_type"></a> [dns\_type](#input\_dns\_type) | DNS record type used for RDS endpoint records. | `string` | `"CNAME"` | no |
 | <a name="input_dns_zone"></a> [dns\_zone](#input\_dns\_zone) | Private Route53 hosted zone name used to create DNS records for instance endpoints. If null/empty, no DNS records are created. | `string` | `null` | no |
 | <a name="input_enabled_cloudwatch_logs_exports"></a> [enabled\_cloudwatch\_logs\_exports](#input\_enabled\_cloudwatch\_logs\_exports) | Set of log types to enable for exporting to CloudWatch logs. | `list(string)` | `[]` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment name (e.g., dev, staging, prod) | `string` | n/a | yes |
-| <a name="input_instances"></a> [instances](#input\_instances) | A map of RDS instance configurations. | <pre>map(object({<br/>    allowed_cidr_blocks             = optional(list(string), [])<br/>    auto_minor_version_upgrade      = bool<br/>    availability_zone               = optional(string, null)<br/>    allocated_storage               = number<br/>    backup_retention_period         = number<br/>    backup_window                   = string<br/>    ca_cert_identifier              = string<br/>    copy_tags_to_snapshot           = bool<br/>    database_name                   = string<br/>    database_user                   = string<br/>    dedicated_log_volume            = optional(bool)<br/>    deletion_protection             = bool<br/>    enabled_cloudwatch_logs_exports = optional(list(string), [])<br/>    engine                          = string<br/>    engine_version                  = string<br/>    environment                     = string<br/>    final_snapshot_identifier       = optional(string, null)<br/>    instance_class                  = string<br/>    iops                            = optional(number, null)<br/>    kms_key_id                      = optional(string, null)<br/>    maintenance_window              = string<br/>    manage_master_user_password     = bool<br/>    max_allocated_storage           = optional(number, null)<br/>    multi_az                        = bool<br/>    monitoring_interval             = optional(number, null)<br/>    monitoring_role_arn             = optional(string, null)<br/>    name                            = string<br/>    create_option_group             = optional(bool, false)<br/>    option_group_name               = optional(string, null)<br/>    option_group_description        = optional(string, null)<br/>    option_group_major_engine_version = optional(string, null)<br/>    option_group_options = optional(list(object({<br/>      option_name                    = string<br/>      port                           = optional(number, null)<br/>      version                        = optional(string, null)<br/>      db_security_group_memberships  = optional(list(string), [])<br/>      vpc_security_group_memberships = optional(list(string), [])<br/>      option_settings = optional(list(object({<br/>        name  = string<br/>        value = string<br/>      })), [])<br/>    })), [])<br/>    create_parameter_group          = optional(bool, false)<br/>    parameter_group_name            = optional(string, null)<br/>    parameter_group_description     = optional(string, null)<br/>    parameter_group_family          = optional(string, null)<br/>    parameter_group_parameters = optional(list(object({<br/>      name         = string<br/>      value        = string<br/>      apply_method = optional(string, null)<br/>    })), [])<br/>    performance_insights_enabled    = bool<br/>    performance_insights_kms_key_id = optional(string, null)<br/>    project_name                    = string<br/>    skip_final_snapshot             = bool<br/>    snapshot_identifier             = optional(string)<br/>    storage_type                    = string<br/>    storage_encrypted               = bool<br/>    username                        = string<br/>    dns = optional(object({<br/>      name = optional(string, null)<br/>      type = optional(string, null)<br/>      ttl  = optional(number, null)<br/>    }), null)<br/>  }))</pre> | n/a | yes |
+| <a name="input_instances"></a> [instances](#input\_instances) | A map of RDS instance configurations. | <pre>map(object({<br/>    allowed_cidr_blocks               = optional(list(string), [])<br/>    auto_minor_version_upgrade        = bool<br/>    availability_zone                 = optional(string, null)<br/>    allocated_storage                 = number<br/>    backup_retention_period           = number<br/>    backup_window                     = string<br/>    ca_cert_identifier                = string<br/>    copy_tags_to_snapshot             = bool<br/>    database_name                     = string<br/>    database_user                     = string<br/>    dedicated_log_volume              = optional(bool)<br/>    deletion_protection               = bool<br/>    enabled_cloudwatch_logs_exports   = optional(list(string), [])<br/>    engine                            = string<br/>    engine_version                    = string<br/>    environment                       = string<br/>    final_snapshot_identifier         = optional(string, null)<br/>    instance_class                    = string<br/>    iops                              = optional(number, null)<br/>    kms_key_id                        = optional(string, null)<br/>    maintenance_window                = string<br/>    manage_master_user_password       = bool<br/>    max_allocated_storage             = optional(number, null)<br/>    multi_az                          = bool<br/>    monitoring_interval               = optional(number, null)<br/>    monitoring_role_arn               = optional(string, null)<br/>    name                              = string<br/>    create_option_group               = optional(bool, false)<br/>    option_group_name                 = optional(string, null)<br/>    option_group_description          = optional(string, null)<br/>    option_group_major_engine_version = optional(string, null)<br/>    option_group_options = optional(list(object({<br/>      option_name                    = string<br/>      port                           = optional(number, null)<br/>      version                        = optional(string, null)<br/>      db_security_group_memberships  = optional(list(string), [])<br/>      vpc_security_group_memberships = optional(list(string), [])<br/>      option_settings = optional(list(object({<br/>        name  = string<br/>        value = string<br/>      })), [])<br/>    })), [])<br/>    create_parameter_group      = optional(bool, false)<br/>    parameter_group_name        = optional(string, null)<br/>    parameter_group_description = optional(string, null)<br/>    parameter_group_family      = optional(string, null)<br/>    parameter_group_parameters = optional(list(object({<br/>      name         = string<br/>      value        = string<br/>      apply_method = optional(string, null)<br/>    })), [])<br/>    performance_insights_enabled    = bool<br/>    performance_insights_kms_key_id = optional(string, null)<br/>    project_name                    = string<br/>    skip_final_snapshot             = bool<br/>    snapshot_identifier             = optional(string)<br/>    storage_type                    = string<br/>    storage_encrypted               = bool<br/>    username                        = string<br/>    dns = optional(object({<br/>      name = optional(string, null)<br/>      ttl  = optional(number, null)<br/>    }), null)<br/>  }))</pre> | n/a | yes |
 | <a name="input_iops"></a> [iops](#input\_iops) | The amount of provisioned IOPS. Setting this implies a storage\_type of 'io1' or 'io2'. Can only be set when storage\_type is 'io1', 'io2' or 'gp3'. Cannot be specified for gp3 storage if the allocated\_storage value is below a per-engine threshold. | `number` | `null` | no |
 | <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | Optional KMS key ARN to encrypt the RDS and Secrets Manager secrets | `string` | `null` | no |
 | <a name="input_manage_master_user_password"></a> [manage\_master\_user\_password](#input\_manage\_master\_user\_password) | Set to true to allow RDS to manage the master user password in Secrets Manager. | `bool` | `true` | no |

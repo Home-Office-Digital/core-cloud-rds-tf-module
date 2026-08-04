@@ -62,7 +62,6 @@ variable "instances" {
     username                        = string
     dns = optional(object({
       name = optional(string, null)
-      type = optional(string, null)
       ttl  = optional(number, null)
     }), null)
   }))
@@ -176,12 +175,6 @@ variable "dns_zone" {
   description = "Private Route53 hosted zone name used to create DNS records for instance endpoints. If null/empty, no DNS records are created."
   type        = string
   default     = null
-}
-
-variable "dns_type" {
-  description = "DNS record type used for RDS endpoint records."
-  type        = string
-  default     = "CNAME"
 }
 
 variable "dns_ttl" {

@@ -140,7 +140,7 @@ run "validate_dns_defaults" {
       aws_route53_record.this["app"].type == "CNAME",
       aws_route53_record.this["reporting"].type == "CNAME"
     ])
-    error_message = "Record type should default to dns_type"
+    error_message = "Record type should always be CNAME"
   }
 
   assert {
@@ -162,7 +162,6 @@ run "validate_per_instance_dns_overrides" {
       app = merge(var.instances.app, {
         dns = {
           name = "app-db"
-          type = "CNAME"
           ttl  = 60
         }
       })
@@ -206,7 +205,6 @@ run "validate_per_instance_dns_name_presence_filter" {
       })
       reporting = merge(var.instances.reporting, {
         dns = {
-          type = "CNAME"
         }
       })
     })

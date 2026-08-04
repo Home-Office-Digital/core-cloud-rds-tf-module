@@ -189,14 +189,14 @@ resource "aws_route53_record" "this" {
 
   zone_id = data.aws_route53_zone.selected[0].id
   name    = trimspace(each.value.dns.name)
-  type    = coalesce(try(each.value.dns.type, null), var.dns_type)
+  type    = "CNAME"
   ttl     = coalesce(try(each.value.dns.ttl, null), var.dns_ttl)
   records = [aws_db_instance.this[each.key].address]
 
   lifecycle {
     precondition {
       condition     = local.dns_record_names_unique
-      error_message = "Duplicate DNS names detected across instances[*].dns.name. DNS record names must be unique per hosted zone."
+      error_message = "Duplicate value in instances[*].dns.name. Each DNS record name must be unique within its hosted zone."
     }
   }
 }
