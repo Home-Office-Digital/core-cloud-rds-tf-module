@@ -61,6 +61,8 @@ terraform {
 inputs = {
   allowed_cidr_blocks  = [x.x.x.x/x]
   db_subnet_group_name = "<project_name>-<environment>-subnet-group"
+  dns_zone             = "example.service.gov.uk"
+  dns_ttl              = 300
   environment          = "test"
   project_name         = "test-project"
   subnet_ids           = ["xxx"]
@@ -88,11 +90,24 @@ inputs = {
       multi_az                        = true
       name                            = "test"
       performance_insights_enabled    = true
+      # Set create_parameter_group/create_option_group to create a new group.
+      create_parameter_group          = true
+      parameter_group_name            = "new-postgres-parameter-group"
+      parameter_group_family          = "postgres15"
+      parameter_group_parameters = [
+        {
+          name  = "rds.force_ssl"
+          value = "1"
+        }
+      ]
       project_name                    = "test-project"
       skip_final_snapshot             = false
       storage_type                    = "gp3"
       storage_encrypted               = true
       username                        = "test"
+      dns = {
+        name = "test-db"
+      }
     }
     test-2 = {
       allocated_storage               = 20
@@ -114,11 +129,17 @@ inputs = {
       multi_az                        = true
       name                            = "test"
       performance_insights_enabled    = true
+      # Set parameter_group_name or option_group_name to attach an existing group.
+      parameter_group_name            = "existing-postgres-parameter-group"
       project_name                    = "test-project"
       skip_final_snapshot             = false
       storage_type                    = "gp3"
       storage_encrypted               = true
       username                        = "test"
+      dns = {
+        name = "test2-db"
+        ttl  = 60
+      }
     }    
   }
 
@@ -137,16 +158,18 @@ inputs = {
 
 ```
 
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.7.5 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.88.0 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.88.0 |
 
 ## Modules
@@ -156,16 +179,20 @@ No modules.
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_db_instance.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_instance) | resource |
+| [aws_db_option_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_option_group) | resource |
+| [aws_db_parameter_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_parameter_group) | resource |
 | [aws_db_subnet_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/db_subnet_group) | resource |
+| [aws_route53_record.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/route53_record) | resource |
 | [aws_security_group.this](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group) | resource |
 | [aws_db_subnet_group.existing](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/db_subnet_group) | data source |
+| [aws_route53_zone.selected](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/route53_zone) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_allowed_cidr_blocks"></a> [allowed\_cidr\_blocks](#input\_allowed\_cidr\_blocks) | A list of allowed CIDRs for the DB Subnet Group. | `list(string)` | `[]` | no |
 | <a name="input_auto_minor_version_upgrade"></a> [auto\_minor\_version\_upgrade](#input\_auto\_minor\_version\_upgrade) | Indicates that minor engine upgrades will be applied automatically to the RDSÅ instance during the maintenance window. | `bool` | `true` | no |
 | <a name="input_availability_zone"></a> [availability\_zone](#input\_availability\_zone) | Must be specified if multi\_az = false | `string` | `null` | no |
@@ -177,9 +204,11 @@ No modules.
 | <a name="input_db_subnet_group_name"></a> [db\_subnet\_group\_name](#input\_db\_subnet\_group\_name) | The name of the DB subnet group to use. | `string` | `null` | no |
 | <a name="input_dedicated_log_volume"></a> [dedicated\_log\_volume](#input\_dedicated\_log\_volume) | Use a dedicated log volume (DLV) for the DB instance. Requires Provisioned IOPS. | `bool` | `null` | no |
 | <a name="input_deletion_protection"></a> [deletion\_protection](#input\_deletion\_protection) | Enables deletion protection for the RDS instance. When set to true, the instance cannot be deleted unless this setting is disabled. | `bool` | `true` | no |
+| <a name="input_dns_ttl"></a> [dns\_ttl](#input\_dns\_ttl) | Time to live, in seconds, for Route53 DNS records created for RDS endpoints. | `number` | `300` | no |
+| <a name="input_dns_zone"></a> [dns\_zone](#input\_dns\_zone) | Private Route53 hosted zone name used to create DNS records for instance endpoints. If null/empty, no DNS records are created. | `string` | `null` | no |
 | <a name="input_enabled_cloudwatch_logs_exports"></a> [enabled\_cloudwatch\_logs\_exports](#input\_enabled\_cloudwatch\_logs\_exports) | Set of log types to enable for exporting to CloudWatch logs. | `list(string)` | `[]` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment name (e.g., dev, staging, prod) | `string` | n/a | yes |
-| <a name="input_instances"></a> [instances](#input\_instances) | A map of RDS instance configurations. | <pre>map(object({<br/>    allowed_cidr_blocks             = optional(list(string), [])<br/>    auto_minor_version_upgrade      = bool<br/>    availability_zone               = optional(string, null)<br/>    allocated_storage               = number<br/>    backup_retention_period         = number<br/>    backup_window                   = string<br/>    ca_cert_identifier              = string<br/>    copy_tags_to_snapshot           = bool<br/>    database_name                   = string<br/>    database_user                   = string<br/>    dedicated_log_volume            = optional(bool)<br/>    deletion_protection             = bool<br/>    enabled_cloudwatch_logs_exports = optional(list(string), [])<br/>    engine                          = string<br/>    engine_version                  = string<br/>    environment                     = string<br/>    final_snapshot_identifier       = optional(string, null)<br/>    instance_class                  = string<br/>    iops                            = optional(number, null)<br/>    kms_key_id                      = optional(string, null)<br/>    maintenance_window              = string<br/>    manage_master_user_password     = bool<br/>    max_allocated_storage           = optional(number, null)<br/>    multi_az                        = bool<br/>    monitoring_interval             = optional(number, null)<br/>    monitoring_role_arn             = optional(string, null)<br/>    name                            = string<br/>    performance_insights_enabled    = bool<br/>    performance_insights_kms_key_id = optional(string, null)<br/>    project_name                    = string<br/>    skip_final_snapshot             = bool<br/>    snapshot_identifier             = optional(string)<br/>    storage_type                    = string<br/>    storage_encrypted               = bool<br/>    username                        = string<br/>  }))</pre> | n/a | yes |
+| <a name="input_instances"></a> [instances](#input\_instances) | A map of RDS instance configurations. | <pre>map(object({<br/>    allowed_cidr_blocks               = optional(list(string), [])<br/>    auto_minor_version_upgrade        = bool<br/>    availability_zone                 = optional(string, null)<br/>    allocated_storage                 = number<br/>    backup_retention_period           = number<br/>    backup_window                     = string<br/>    ca_cert_identifier                = string<br/>    copy_tags_to_snapshot             = bool<br/>    database_name                     = string<br/>    database_user                     = string<br/>    dedicated_log_volume              = optional(bool)<br/>    deletion_protection               = bool<br/>    enabled_cloudwatch_logs_exports   = optional(list(string), [])<br/>    engine                            = string<br/>    engine_version                    = string<br/>    environment                       = string<br/>    final_snapshot_identifier         = optional(string, null)<br/>    instance_class                    = string<br/>    iops                              = optional(number, null)<br/>    kms_key_id                        = optional(string, null)<br/>    maintenance_window                = string<br/>    manage_master_user_password       = bool<br/>    max_allocated_storage             = optional(number, null)<br/>    multi_az                          = bool<br/>    monitoring_interval               = optional(number, null)<br/>    monitoring_role_arn               = optional(string, null)<br/>    name                              = string<br/>    create_option_group               = optional(bool, false)<br/>    option_group_name                 = optional(string, null)<br/>    option_group_description          = optional(string, null)<br/>    option_group_major_engine_version = optional(string, null)<br/>    option_group_options = optional(list(object({<br/>      option_name                    = string<br/>      port                           = optional(number, null)<br/>      version                        = optional(string, null)<br/>      db_security_group_memberships  = optional(list(string), [])<br/>      vpc_security_group_memberships = optional(list(string), [])<br/>      option_settings = optional(list(object({<br/>        name  = string<br/>        value = string<br/>      })), [])<br/>    })), [])<br/>    create_parameter_group      = optional(bool, false)<br/>    parameter_group_name        = optional(string, null)<br/>    parameter_group_description = optional(string, null)<br/>    parameter_group_family      = optional(string, null)<br/>    parameter_group_parameters = optional(list(object({<br/>      name         = string<br/>      value        = string<br/>      apply_method = optional(string, null)<br/>    })), [])<br/>    performance_insights_enabled    = bool<br/>    performance_insights_kms_key_id = optional(string, null)<br/>    project_name                    = string<br/>    skip_final_snapshot             = bool<br/>    snapshot_identifier             = optional(string)<br/>    storage_type                    = string<br/>    storage_encrypted               = bool<br/>    username                        = string<br/>    dns = optional(object({<br/>      name = optional(string, null)<br/>      ttl  = optional(number, null)<br/>    }), null)<br/>  }))</pre> | n/a | yes |
 | <a name="input_iops"></a> [iops](#input\_iops) | The amount of provisioned IOPS. Setting this implies a storage\_type of 'io1' or 'io2'. Can only be set when storage\_type is 'io1', 'io2' or 'gp3'. Cannot be specified for gp3 storage if the allocated\_storage value is below a per-engine threshold. | `number` | `null` | no |
 | <a name="input_kms_key_arn"></a> [kms\_key\_arn](#input\_kms\_key\_arn) | Optional KMS key ARN to encrypt the RDS and Secrets Manager secrets | `string` | `null` | no |
 | <a name="input_manage_master_user_password"></a> [manage\_master\_user\_password](#input\_manage\_master\_user\_password) | Set to true to allow RDS to manage the master user password in Secrets Manager. | `bool` | `true` | no |
@@ -197,15 +226,16 @@ No modules.
 | <a name="input_storage_encrypted"></a> [storage\_encrypted](#input\_storage\_encrypted) | Specifies whether the RDS instance storage is encrypted | `bool` | `true` | no |
 | <a name="input_storage_type"></a> [storage\_type](#input\_storage\_type) | One of 'standard' (magnetic), 'gp2' (general purpose SSD), 'gp3' (new generation of general purpose SSD), or 'io1' (provisioned IOPS SSD). | `string` | `"gp3"` | no |
 | <a name="input_subnet_ids"></a> [subnet\_ids](#input\_subnet\_ids) | A list of subnet IDs for the DB Subnet Group. | `list(string)` | `[]` | no |
-| <a name="input_tags"></a> [tags](#input\_tags) | The following tags must be applied to all resources: cost-centre, account-code, portfolio-id, project-id, service-id, environment-type, owner-business and budget-holder | <pre>object({<br/>    cost-centre      = string<br/>    account-code     = string<br/>    portfolio-id     = string<br/>    project-id       = string<br/>    service-id       = string<br/>    environment-type = string<br/>    owner-business   = string<br/>    budget-holder    = string<br/>  })</pre> | n/a | yes |
+| <a name="input_tags"></a> [tags](#input\_tags) | The following tags must be applied to all resources: cost-centre, account-code, portfolio-id, project-id, service-id, environment-type, owner-business and budget-holder | <pre>object({<br/>    cost-centre      = string<br/>    account-code     = string<br/>    portfolio-id     = string<br/>    project-id       = string<br/>    service-id       = string<br/>    environment-type = string<br/>    owner-business   = string<br/>    budget-holder    = string<br/>    source-repo      = string<br/>    hosting-platform = string<br/>  })</pre> | n/a | yes |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | The ID of the VPC where RDS instance will be created | `string` | n/a | yes |
 | <a name="input_vpc_security_group_ids"></a> [vpc\_security\_group\_ids](#input\_vpc\_security\_group\_ids) | A list of additional VPC security group IDs. | `list(string)` | `[]` | no |
 
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_endpoints"></a> [endpoints](#output\_endpoints) | A map of connection endpoints for all RDS instances |
 | <a name="output_instance_ids"></a> [instance\_ids](#output\_instance\_ids) | A map of RDS instance IDs |
 | <a name="output_rds_instance_ids"></a> [rds\_instance\_ids](#output\_rds\_instance\_ids) | A map of RDS instance IDs |
 | <a name="output_security_group_ids"></a> [security\_group\_ids](#output\_security\_group\_ids) | n/a |
+<!-- END_TF_DOCS -->

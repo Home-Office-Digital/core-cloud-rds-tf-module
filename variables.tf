@@ -1,33 +1,57 @@
 variable "instances" {
   description = "A map of RDS instance configurations."
   type = map(object({
-    allowed_cidr_blocks             = optional(list(string), [])
-    auto_minor_version_upgrade      = bool
-    availability_zone               = optional(string, null)
-    allocated_storage               = number
-    backup_retention_period         = number
-    backup_window                   = string
-    ca_cert_identifier              = string
-    copy_tags_to_snapshot           = bool
-    database_name                   = string
-    database_user                   = string
-    dedicated_log_volume            = optional(bool)
-    deletion_protection             = bool
-    enabled_cloudwatch_logs_exports = optional(list(string), [])
-    engine                          = string
-    engine_version                  = string
-    environment                     = string
-    final_snapshot_identifier       = optional(string, null)
-    instance_class                  = string
-    iops                            = optional(number, null)
-    kms_key_id                      = optional(string, null)
-    maintenance_window              = string
-    manage_master_user_password     = bool
-    max_allocated_storage           = optional(number, null)
-    multi_az                        = bool
-    monitoring_interval             = optional(number, null)
-    monitoring_role_arn             = optional(string, null)
-    name                            = string
+    allowed_cidr_blocks               = optional(list(string), [])
+    auto_minor_version_upgrade        = bool
+    availability_zone                 = optional(string, null)
+    allocated_storage                 = number
+    backup_retention_period           = number
+    backup_window                     = string
+    ca_cert_identifier                = string
+    copy_tags_to_snapshot             = bool
+    database_name                     = string
+    database_user                     = string
+    dedicated_log_volume              = optional(bool)
+    deletion_protection               = bool
+    enabled_cloudwatch_logs_exports   = optional(list(string), [])
+    engine                            = string
+    engine_version                    = string
+    environment                       = string
+    final_snapshot_identifier         = optional(string, null)
+    instance_class                    = string
+    iops                              = optional(number, null)
+    kms_key_id                        = optional(string, null)
+    maintenance_window                = string
+    manage_master_user_password       = bool
+    max_allocated_storage             = optional(number, null)
+    multi_az                          = bool
+    monitoring_interval               = optional(number, null)
+    monitoring_role_arn               = optional(string, null)
+    name                              = string
+    create_option_group               = optional(bool, false)
+    option_group_name                 = optional(string, null)
+    option_group_description          = optional(string, null)
+    option_group_major_engine_version = optional(string, null)
+    option_group_options = optional(list(object({
+      option_name                    = string
+      port                           = optional(number, null)
+      version                        = optional(string, null)
+      db_security_group_memberships  = optional(list(string), [])
+      vpc_security_group_memberships = optional(list(string), [])
+      option_settings = optional(list(object({
+        name  = string
+        value = string
+      })), [])
+    })), [])
+    create_parameter_group      = optional(bool, false)
+    parameter_group_name        = optional(string, null)
+    parameter_group_description = optional(string, null)
+    parameter_group_family      = optional(string, null)
+    parameter_group_parameters = optional(list(object({
+      name         = string
+      value        = string
+      apply_method = optional(string, null)
+    })), [])
     performance_insights_enabled    = bool
     performance_insights_kms_key_id = optional(string, null)
     project_name                    = string
@@ -36,6 +60,10 @@ variable "instances" {
     storage_type                    = string
     storage_encrypted               = bool
     username                        = string
+    dns = optional(object({
+      name = optional(string, null)
+      ttl  = optional(number, null)
+    }), null)
   }))
 }
 
@@ -141,6 +169,18 @@ variable "project_name" {
 variable "environment" {
   description = "Environment name (e.g., dev, staging, prod)"
   type        = string
+}
+
+variable "dns_zone" {
+  description = "Private Route53 hosted zone name used to create DNS records for instance endpoints. If null/empty, no DNS records are created."
+  type        = string
+  default     = null
+}
+
+variable "dns_ttl" {
+  description = "Time to live, in seconds, for Route53 DNS records created for RDS endpoints."
+  type        = number
+  default     = 300
 }
 
 variable "vpc_id" {

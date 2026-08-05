@@ -3,6 +3,12 @@ data "aws_db_subnet_group" "existing" {
   name  = var.db_subnet_group_name
 }
 
+data "aws_route53_zone" "selected" {
+  count        = local.dns_zone_normalized != "" ? 1 : 0
+  name         = "${trimsuffix(local.dns_zone_normalized, ".")}."
+  private_zone = true
+}
+
 resource "aws_db_subnet_group" "this" {
   count = var.db_subnet_group_name == null ? 1 : 0
   # You can create a more dynamic name if you wish
@@ -43,6 +49,85 @@ resource "aws_security_group" "this" {
   })
 }
 
+resource "aws_db_parameter_group" "this" {
+  for_each = local.parameter_groups_to_create_by_instance
+
+  name        = each.value.name
+  family      = each.value.family
+  description = each.value.description
+
+  dynamic "parameter" {
+    for_each = each.value.parameters
+    content {
+      name         = parameter.value.name
+      value        = parameter.value.value
+      apply_method = parameter.value.apply_method
+    }
+  }
+
+  lifecycle {
+    create_before_destroy = true
+
+    precondition {
+      condition     = each.value.family != null
+      error_message = "parameter_group_family must be set when create_parameter_group is true."
+    }
+
+    precondition {
+      condition     = length([for _, config in local.parameter_groups_to_create_by_instance : config.name]) == length(distinct([for _, config in local.parameter_groups_to_create_by_instance : config.name]))
+      error_message = "Module-created parameter groups cannot be shared across instances."
+    }
+  }
+
+  tags = merge(var.tags, {
+    Name = each.value.name
+  })
+}
+
+resource "aws_db_option_group" "this" {
+  for_each = local.option_groups_to_create_by_instance
+
+  name                     = each.value.name
+  option_group_description = each.value.description
+  engine_name              = each.value.engine
+  major_engine_version     = each.value.major_engine_version
+
+  dynamic "option" {
+    for_each = each.value.options
+    content {
+      option_name                    = option.value.option_name
+      port                           = option.value.port
+      version                        = option.value.version
+      db_security_group_memberships  = option.value.db_security_group_memberships
+      vpc_security_group_memberships = option.value.vpc_security_group_memberships
+
+      dynamic "option_settings" {
+        for_each = option.value.option_settings
+        content {
+          name  = option_settings.value.name
+          value = option_settings.value.value
+        }
+      }
+    }
+  }
+
+  lifecycle {
+    precondition {
+      condition     = each.value.major_engine_version != null
+      error_message = "option_group_major_engine_version must be set when create_option_group is true."
+    }
+
+    precondition {
+      condition     = length([for _, config in local.option_groups_to_create_by_instance : config.name]) == length(distinct([for _, config in local.option_groups_to_create_by_instance : config.name]))
+      error_message = "Module-created option groups cannot be shared across instances."
+    }
+  }
+
+  tags = merge(var.tags, {
+    Name = each.value.name
+  })
+}
+
 # Main RDS Instance
 resource "aws_db_instance" "this" {
   for_each = var.instances
@@ -72,6 +157,8 @@ resource "aws_db_instance" "this" {
   monitoring_interval             = var.monitoring_interval
   monitoring_role_arn             = var.monitoring_role_arn
   multi_az                        = var.multi_az
+  option_group_name               = local.option_group_name_by_instance[each.key]
+  parameter_group_name            = local.parameter_group_name_by_instance[each.key]
   performance_insights_enabled    = var.performance_insights_enabled
   performance_insights_kms_key_id = var.performance_insights_kms_key_id
   publicly_accessible             = var.publicly_accessible
@@ -90,5 +177,26 @@ resource "aws_db_instance" "this" {
     create = "90m"
     update = "90m"
     delete = "90m"
+  }
+
+}
+
+resource "aws_route53_record" "this" {
+  for_each = local.dns_zone_normalized != "" ? {
+    for key, instance in var.instances : key => instance
+    if try(trimspace(instance.dns.name), "") != ""
+  } : {}
+
+  zone_id = data.aws_route53_zone.selected[0].id
+  name    = trimspace(each.value.dns.name)
+  type    = "CNAME"
+  ttl     = coalesce(try(each.value.dns.ttl, null), var.dns_ttl)
+  records = [aws_db_instance.this[each.key].address]
+
+  lifecycle {
+    precondition {
+      condition     = local.dns_record_names_unique
+      error_message = "Duplicate value in instances[*].dns.name. Each DNS record name must be unique within its hosted zone."
+    }
   }
 }
